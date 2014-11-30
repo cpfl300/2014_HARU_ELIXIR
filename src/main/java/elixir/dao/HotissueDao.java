@@ -203,7 +203,11 @@ public class HotissueDao {
 						@Override
 						public void setValues(PreparedStatement ps, int i) throws SQLException {
 							Hotissue hotissue = hotissues.get(i);
-							Timestamp timestamp = ElixirUtils.toTimestamp(hotissue.getTimestamp());
+							
+							String timestampStr = hotissue.getTimestamp();
+							log.debug("timestamp: " + timestampStr);
+							
+							Timestamp timestamp = ElixirUtils.toTimestamp(timestampStr);
 							
 							ps.setInt(1, hotissue.getId());
 							ps.setString(2, hotissue.getName());
