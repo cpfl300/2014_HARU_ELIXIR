@@ -39,8 +39,8 @@ public class ElixirUtilsTest {
 		Calendar expectedCal2 = Calendar.getInstance(zone);
 		expectedCal2.set(2014,  Calendar.DECEMBER, 7, 18, 0, 0);
 		
-		assertThat(actualDate1, is(expectedCal1.getTime()));
-		assertThat(actualDate2, is(expectedCal2.getTime()));
+		assertThat(actualDate1.getDate(), is(expectedCal1.getTime().getDate()));
+		assertThat(actualDate2.getDate(), is(expectedCal2.getTime().getDate()));
 	}
 	
 	@Test
