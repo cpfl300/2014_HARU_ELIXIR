@@ -48,7 +48,7 @@ public class ArticleService {
 		article.setId(id);
 		
 		try {			
-			articleDao.add(article);
+			articleDao.addArticle(article);
 		} catch (DuplicateKeyException e) {
 			// do-nothing
 		}
@@ -79,7 +79,7 @@ public class ArticleService {
 	public boolean has(int id) {
 		
 		try {
-			articleDao.get(id);
+			articleDao.findById(id);
 			
 			return true;
 			
@@ -93,9 +93,9 @@ public class ArticleService {
 
 	@Transactional
 	public int delete(int id) {
-		Hotissue hotissue = articleDao.get(id).getHotissue();
+		Hotissue hotissue = articleDao.findById(id).getHotissue();
 		
-		int affectedRow = articleDao.delete(id);
+		int affectedRow = articleDao.deleteById(id);
 		hotissueService.delete(hotissue.getId());
 		
 		return affectedRow;
@@ -104,7 +104,7 @@ public class ArticleService {
 	
 	@Transactional
 	public int calcScore(String from, String to) {		
-		List<Article> articles = articleDao.getArticlesBetweenDates(from, to);
+		List<Article> articles = articleDao.findBetweenDates(new String[] {from, to});
 		Iterator<Article> ir = articles.iterator();
 		while (ir.hasNext()) {
 			ir.next().clacScore();
@@ -117,7 +117,7 @@ public class ArticleService {
 	
 	public List<Article> getArticlesByServiceDate(Date date) {
 		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
-		List<Article> articles = articleDao.getArticlesBetweenServiceDates(dates[0], dates[1]);
+		List<Article> articles = articleDao.findBetweenDatesAtHalfDay(dates);
 		
 		Iterator<Article> ir = articles.iterator();
 		while(ir.hasNext()) {
@@ -131,7 +131,7 @@ public class ArticleService {
 	public Article getBySequenceAndServiceDate(int sequence, Date date) {
 		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
 		
-		Article article = articleDao.getBySequenceBetweenServiceDates(sequence, dates[0], dates[1]);
+		Article article = articleDao.findBySequenceBetweenDatesAtHalfDay(dates, sequence);
 		setJournalAndSection(article);
 
 		return article;
@@ -174,12 +174,12 @@ public class ArticleService {
 
 	public List<Article> getByOrderedScore(int size) {
 		
-		return articleDao.getByOrderedScore(size);
+		return articleDao.findByScoreOrderFromOneTo(size);
 	}
 
 	public List<Article> getArticlesBetweenDates(String from, String to) {
 		
-		return articleDao.getArticlesBetweenDates(from, to);
+		return articleDao.findBetweenDates(new String[] {from, to});
 	}
 
 

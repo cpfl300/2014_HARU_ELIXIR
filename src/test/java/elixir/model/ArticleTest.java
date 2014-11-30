@@ -39,6 +39,19 @@ public class ArticleTest {
 	public void setup() {
 		makeFixtures();
 	}
+	
+	@Test
+	public void newHalfDayArticle() {
+		int id = 1;
+		String timestamp = ElixirUtils.getFormattedDate(2014, Calendar.DECEMBER, 7, 6);
+		int sequence = 1;
+		
+		Article actualHalfDayArticle = new Article(id, sequence, timestamp);
+		
+		assertThat(actualHalfDayArticle.getId(), is(id));
+		assertThat(actualHalfDayArticle.getTimestamp(), is(timestamp));
+		assertThat(actualHalfDayArticle.getSequence(), is(sequence));
+	}
 
 	
 	@Test

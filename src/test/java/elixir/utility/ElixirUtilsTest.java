@@ -15,8 +15,6 @@ import org.junit.Test;
 
 public class ElixirUtilsTest {
 
-
-	
 	@Test
 	public void getFormattedDate() {
 		String actualDate1 = ElixirUtils.getFormattedDate(2014, Calendar.DECEMBER, 7, 6);
@@ -127,9 +125,9 @@ public class ElixirUtilsTest {
 		String[] actualDates2 = ElixirUtils.getServiceFormattedDatesByDate(date2);
 		
 		assertThat(actualDates1[0], is("2014-12-06 18:00:00"));
-		assertThat(actualDates1[1], is("2014-12-07 06:00:00"));
+		assertThat(actualDates1[1], is("2014-12-07 05:59:59"));
 		assertThat(actualDates2[0], is("2014-12-07 06:00:00"));
-		assertThat(actualDates2[1], is("2014-12-07 18:00:00"));
+		assertThat(actualDates2[1], is("2014-12-07 17:59:59"));
 	}
 	
 	@Test
@@ -138,9 +136,9 @@ public class ElixirUtilsTest {
 		String[] actualDates2 = ElixirUtils.getServiceDatesByTime(2014, Calendar.DECEMBER, 7, 18);
 		
 		assertThat(actualDates1[0], is("2014-12-06 18:00:00"));
-		assertThat(actualDates1[1], is("2014-12-07 06:00:00"));
+		assertThat(actualDates1[1], is("2014-12-07 05:59:59"));
 		assertThat(actualDates2[0], is("2014-12-07 06:00:00"));
-		assertThat(actualDates2[1], is("2014-12-07 18:00:00"));
+		assertThat(actualDates2[1], is("2014-12-07 17:59:59"));
 	}
 
 }

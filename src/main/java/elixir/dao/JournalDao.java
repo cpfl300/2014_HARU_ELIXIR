@@ -28,7 +28,6 @@ public class JournalDao {
 	};
 
 	public Journal getByName(String name) {
-		log.debug("journal: " + name);
 		
 		return this.jdbcTemplate.queryForObject(
 					"SELECT journals.id, journals.name, section.name FROM journals INNER JOIN journal_sections AS section ON journals.journal_sections_id = section.id WHERE journals.name = ? ",

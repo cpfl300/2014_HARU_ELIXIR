@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 public class ElixirUtils {
 	private static final Logger log = LoggerFactory.getLogger(ElixirUtils.class);
 	
+	static final int FIANL_SERVICE_TIME_OFFSET = -1;
 	static final int HALF_A_DAY_TIME = 12;
 	static final int MORNING_SERVICE_TIME = 6;
 	static final int AFTERNOON_SERVICE_TIME = MORNING_SERVICE_TIME + HALF_A_DAY_TIME;
@@ -95,9 +96,11 @@ public class ElixirUtils {
 		String[] dates = new String[2];
 		Calendar calendar = Calendar.getInstance(KOREA_ZONE);
 		calendar.set(year, month , day, hour, 0, 0);
+		calendar.add(Calendar.SECOND, FIANL_SERVICE_TIME_OFFSET);
 		
 		dates[1] = DATE_FORMAT_IN_ARTILCE.format(calendar.getTime());
 		
+		calendar.add(Calendar.SECOND, -(FIANL_SERVICE_TIME_OFFSET));
 		calendar.add(Calendar.HOUR, OFFSET_HOURS_IN_SERVICE);
 		dates[0] = DATE_FORMAT_IN_ARTILCE.format(calendar.getTime());
 		
@@ -109,9 +112,11 @@ public class ElixirUtils {
 		String[] dates = new String[2];
 		Calendar calendar = Calendar.getInstance(KOREA_ZONE);
 		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, FIANL_SERVICE_TIME_OFFSET);
 		
 		dates[1] = DATE_FORMAT_IN_ARTILCE.format(calendar.getTime());
 		
+		calendar.add(Calendar.SECOND, -(FIANL_SERVICE_TIME_OFFSET));
 		calendar.add(Calendar.HOUR, OFFSET_HOURS_IN_SERVICE);
 		dates[0] = DATE_FORMAT_IN_ARTILCE.format(calendar.getTime());
 		
