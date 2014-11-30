@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 
-import elixir.config.Config;
+import elixir.config.ElixirConfig;
 import elixir.model.Article;
 import elixir.model.Hotissue;
 import elixir.model.Journal;
@@ -33,7 +33,7 @@ import elixir.model.Section;
 import elixir.utility.ElixirUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=Config.class, loader=AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes=ElixirConfig.class, loader=AnnotationConfigContextLoader.class)
 @Transactional
 public class ArticleDaoTest {
 	

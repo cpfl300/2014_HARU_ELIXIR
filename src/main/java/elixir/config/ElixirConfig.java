@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages={"elixir"})
 @PropertySource(value="classpath:application-properties.xml")
 @EnableTransactionManagement
-public class Config {
+public class ElixirConfig {
 
 	@Resource
 	private Environment env;
