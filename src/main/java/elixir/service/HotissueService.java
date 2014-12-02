@@ -37,7 +37,7 @@ public class HotissueService {
 		log.debug("hotissue id: " + id);
 		
 		try {
-			hotissueDao.get(id);
+			hotissueDao.findById(id);
 			
 		} catch (EmptyResultDataAccessException e) {
 			hotissueDao.add(hotissue);
@@ -52,7 +52,7 @@ public class HotissueService {
 		Hotissue result = null;
 
 		try {
-			result = hotissueDao.get(id);
+			result = hotissueDao.findById(id);
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing
 		}

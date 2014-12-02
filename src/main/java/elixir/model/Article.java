@@ -19,6 +19,16 @@ public class Article {
 	private String timestamp;
 	private int sequence;
 	
+	public Article() {
+
+	}
+	
+	// update score
+	public Article(int id, double score) {
+		this.id = id;
+		this.score = score;
+	}
+	
 	
 	// half_day
 	public Article(int id, int sequence, String timestamp) {
@@ -26,8 +36,22 @@ public class Article {
 		this.sequence = sequence;
 		this.timestamp = timestamp;
 	}
-
-
+	
+	// self dependency
+	// asListWithSequenceIncludeTimestamp
+	public Article(int id, String timestamp, int sequence) {
+		this.id = id;
+		this.timestamp = timestamp;
+		this.sequence = sequence;
+	}
+	
+	// standard
+	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+			int completedReadingCount) {
+		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+	}
+	
+	// standard
 	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
 			int completedReadingCount, double score) {
 		this.id = id;
@@ -41,44 +65,31 @@ public class Article {
 		this.completedReadingCount = completedReadingCount;
 		this.score = score;
 	}
-
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount, double score) {
-		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
-		
-	}
 	
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount) {
-		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
-	}
+
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount, double score) {
+//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
+//		
+//	}
+
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount) {
+//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+//	}
+//	
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
+//		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
+//	}
+//	
+//	
+//	
+//	
+//
+//
 	
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
-		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
-	}
-	
-	
-	
-	public Article() {
-
-	}
-
-
-	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount) {
-		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
-	}
-
-	public Article(int id, double score) {
-		this.id = id;
-		this.score = score;
-	}
-
-	public Article(int id, String timestamp, int sequence) {
-		this.id = id;
-		this.timestamp = timestamp;
-		this.sequence = sequence;
-	}
+//
+//
 
 	public int getId() {
 		return id;

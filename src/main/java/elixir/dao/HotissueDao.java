@@ -3,13 +3,9 @@ package elixir.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -22,12 +18,9 @@ import elixir.model.Article;
 import elixir.model.Hotissue;
 import elixir.model.Journal;
 import elixir.model.Section;
-import elixir.utility.ElixirUtils;
 
 @Repository
 public class HotissueDao {
-	
-	private static final Logger log = LoggerFactory.getLogger(HotissueDao.class);
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -129,16 +122,13 @@ public class HotissueDao {
 
 	public void add(Hotissue hotissue) {
 		this.jdbcTemplate.update(
-					"insert into hotissues (id, name, score) values (?, ?, ?)",
+					"insert into hotissues (id, name) values (?, ?)",
 					hotissue.getId(),
-					hotissue.getName(),
-					hotissue.getScore()
+					hotissue.getName()
 				);
 	}
 
-	public Hotissue get(int id) {
-		
-		log.debug("hotissue id: " + id);
+	public Hotissue findById(int id) {
 		
 		return this.jdbcTemplate.queryForObject(
 					"select * from hotissues where id = ?",
@@ -219,7 +209,7 @@ public class HotissueDao {
 		
 	}
 
-	public List<Hotissue> getByOrderedScore(int size) {
+	public List<Hotissue> findByScoreOrderFromOneTo(int size) {
 		
 		return this.jdbcTemplate.query(
 					"SELECT * FROM hotissues ORDER BY score DESC LIMIT ?",

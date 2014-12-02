@@ -66,9 +66,9 @@ public class HotissueServiceTest {
 
 	@Test
 	public void add() {
-		when(hotissueDaoMock.get(hotissue1.hashCode())).thenReturn(hotissue1);
-		when(hotissueDaoMock.get(hotissue2.hashCode())).thenReturn(hotissue2);
-		when(hotissueDaoMock.get(hotissue3.hashCode())).thenReturn(hotissue3);
+		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenReturn(hotissue1);
+		when(hotissueDaoMock.findById(hotissue2.hashCode())).thenReturn(hotissue2);
+		when(hotissueDaoMock.findById(hotissue3.hashCode())).thenReturn(hotissue3);
 		
 		int actualHotissue1Key = hotissueService.add(hotissue1); 
 		assertThat(actualHotissue1Key, is(hotissue1.hashCode()));
@@ -82,7 +82,7 @@ public class HotissueServiceTest {
 	
 	@Test
 	public void notAdd() {
-		when(hotissueDaoMock.get(hotissue1.hashCode())).thenThrow(EmptyResultDataAccessException.class);
+		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenThrow(EmptyResultDataAccessException.class);
 		
 		int actualHotissue1Key = hotissueService.add(hotissue1); 
 		assertThat(actualHotissue1Key, is(hotissue1.hashCode()));
@@ -160,7 +160,7 @@ public class HotissueServiceTest {
 	@Test
 	public void getById() {
 		
-		when(hotissueDaoMock.get(hotissue1.getId())).thenReturn(hotissue1);
+		when(hotissueDaoMock.findById(hotissue1.getId())).thenReturn(hotissue1);
 		Hotissue actualHotissue = hotissueService.getById(hotissue1.getId());
 		
 		assertThat(actualHotissue.getId(), is(hotissue1.getId()));

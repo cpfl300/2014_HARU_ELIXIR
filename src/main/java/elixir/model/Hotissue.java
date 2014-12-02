@@ -18,6 +18,13 @@ public class Hotissue {
 		
 	}
 	
+	// standard
+	public Hotissue(int id, String name, String timestamp) {
+		this.id = id;
+		this.name = name;
+		this.timestamp = timestamp;
+	}
+	
 	public Hotissue(int id) {
 		this(id, null, null);
 	}
@@ -29,28 +36,27 @@ public class Hotissue {
 	public Hotissue(int id, String name) {
 		this(id, name, null);
 	}
-
-	public Hotissue(int id, String name, String timestamp) {
-		this.id = id;
-		this.name = name;
-		this.timestamp = timestamp;
-	}
 	
-	public Hotissue(int id, String name, String timestamp, int sequence) {
-		this.id = id;
-		this.name = name;
-		this.timestamp = timestamp;
-		this.sequence = sequence;
-	}
-
-	public Hotissue(String name, String timestamp) {
-		this(0, name, timestamp);
-	}
-
+	// update score
 	public Hotissue(int id, double score) {
 		this.id = id;
 		this.score = score;
 	}
+	
+//
+//	
+//	public Hotissue(int id, String name, String timestamp, int sequence) {
+//		this.id = id;
+//		this.name = name;
+//		this.timestamp = timestamp;
+//		this.sequence = sequence;
+//	}
+//
+//	public Hotissue(String name, String timestamp) {
+//		this(0, name, timestamp);
+//	}
+//
+
 
 	public int getId() {
 		return id;

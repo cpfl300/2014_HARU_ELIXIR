@@ -1,9 +1,10 @@
 package elixir.dao;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,6 +26,7 @@ import elixir.model.Article;
 import elixir.model.Hotissue;
 import elixir.model.Journal;
 import elixir.model.Section;
+import elixir.utility.ElixirUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ElixirConfig.class, loader=AnnotationConfigContextLoader.class)
@@ -49,82 +52,227 @@ public class HotissueDaoTest {
 	
 	@Before
 	public void setup() {
-		
-		hotissue1 = new Hotissue(1, "hotissue1", "1111-01-01 01:11:11");
-		hotissue2 = new Hotissue(2, "hotissue2", "1222-02-02 02:11:11");
-		hotissue3 = new Hotissue(3, "hotissue3", "1333-03-03 03:11:11");
-		
-		journal = new Journal(84);
-		section = new Section(3);
+		makeFixtures();
 	}
 	
-	@Test
-	public void deleteAll() {
-		hotissueDao.deleteAll();
-		
-	}
-	
+	// read
 	@Test
 	public void getCount() {
-		hotissueDao.deleteAll();
-		assertThat(hotissueDao.getCount(), is(0));
+		initDao();
 		
-	}
-	
-	@Test
-	public void add() {
-		prepareHotissueDao();
-		
+		// add and get
 		hotissueDao.add(hotissue1);
 		assertThat(hotissueDao.getCount(), is(1));
 		
+		// add and get
 		hotissueDao.add(hotissue2);
 		assertThat(hotissueDao.getCount(), is(2));
 		
+		// add and get
 		hotissueDao.add(hotissue3);
 		assertThat(hotissueDao.getCount(), is(3));
 	}
 	
+
+	// find hotissue
 	@Test
-	public void addHotissue() {
+	public void findById() {
+		initDao();
+		prepareHotissueDao(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		
+		Hotissue actual1 = hotissueDao.findById(hotissue1.getId());
+		assertSameStandardHotissue(actual1, hotissue1);
+		
+		Hotissue actual2 = hotissueDao.findById(hotissue2.getId());
+		assertSameStandardHotissue(actual2, hotissue2);
+		
+		Hotissue actual3 = hotissueDao.findById(hotissue3.getId());
+		assertSameStandardHotissue(actual3, hotissue3);
+	}
+	
+	
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findById_emptyResultDataAccessException() {
+		initDao();
+		prepareHotissueDao(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		
+		// find - expect
+		Hotissue actual1 = hotissueDao.findById(0);
+		assertSameStandardHotissue(actual1, hotissue1);
+	}
+
+
+	@Test
+	public void findByScoreOrderFromOneTo() {
+		final int limit = 2;
+		initDao();
+
+		prepareHotissueDao(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		updateHotissueScore(new Hotissue[]{new Hotissue(1, 10.1), new Hotissue(2, 20.1), new Hotissue(3, 30.1)});
+		
+		// find
+		List<Hotissue> actualHotissues = hotissueDao.findByScoreOrderFromOneTo(limit);
+		
+		assertThat(actualHotissues.size(), is(limit));
+		assertThat(actualHotissues.get(0).getScore(), is(30.1));
+		assertThat(actualHotissues.get(1).getScore(), is(20.1));
+	}
+
+
+
+
+	@Test
+	public void getByName() {
 		prepareHotissueDao();
 		
-		hotissues = new ArrayList<Hotissue>();
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue2);
-		hotissues.add(hotissue3);
+		hotissueDao.add(hotissue1);
+		hotissueDao.add(hotissue2);
+		hotissueDao.add(hotissue3);
+		assertThat(hotissueDao.getCount(), is(3));
 		
+		Hotissue actualHotissue1 = hotissueDao.getByName(hotissue1.getName());
+		assertSameStandardHotissue(actualHotissue1, hotissue1);
+		
+		Hotissue actualHotissue2 = hotissueDao.getByName(hotissue2.getName());
+		assertSameStandardHotissue(actualHotissue2, hotissue2);
+		
+		Hotissue actualHotissue3 = hotissueDao.getByName(hotissue3.getName());
+		assertSameStandardHotissue(actualHotissue3, hotissue3);
+		
+	}
+	
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void notGetByName() {
+		prepareHotissueDao();
+		
+		hotissueDao.add(hotissue1);
+		hotissueDao.add(hotissue2);
+		hotissueDao.add(hotissue3);
+		assertThat(hotissueDao.getCount(), is(3));
+		
+		Hotissue fakeHotissue = new Hotissue("face hotissue");
+		Hotissue actualHotissue = hotissueDao.getByName(fakeHotissue.getName());
+		assertSameStandardHotissue(actualHotissue, fakeHotissue);
+	}
+	
+	
+	
+	
+	// delete
+	@Test
+	public void deleteAll() {
+		initDao();
+		
+		hotissues = Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		
+		// add
+		hotissueDao.addHotissues(hotissues);
+		assertThat(hotissueDao.getCount(), is(3));
+		
+		// delete
+		hotissueDao.deleteAll();
+		assertThat(hotissueDao.getCount(), is(0));
+	}
+	
+	
+	// insert
+	@Test
+	public void add() {
+		initDao();
+		
+		// add first
+		hotissueDao.add(hotissue1);
+		assertThat(hotissueDao.getCount(), is(1));
+		
+		// add second
+		hotissueDao.add(hotissue2);
+		assertThat(hotissueDao.getCount(), is(2));
+		
+		// add third
+		hotissueDao.add(hotissue3);
+		assertThat(hotissueDao.getCount(), is(3));
+	}
+	
+	
+	@Test(expected=DuplicateKeyException.class)
+	public void add_duplicatedKeyException() {
+		initDao();
+		
+		// add
+		hotissueDao.add(hotissue1);
+		assertThat(hotissueDao.getCount(), is(1));
+		
+		// add - except
+		hotissueDao.add(hotissue1);
+		assertThat(hotissueDao.getCount(), is(2));
+	}
+	
+	
+	@Test
+	public void addHotissues() {
+		initDao();
+		
+		hotissues = Arrays.asList(new Hotissue[] {hotissue1, hotissue2, hotissue3});
+		
+		// add
 		hotissueDao.addHotissues(hotissues);
 		assertThat(hotissueDao.getCount(), is(3));
 	
 	}
-	
-	@Test
-	public void addHotissueIncludedDucplicateKey() {
-		prepareHotissueDao();
-		
-		hotissues = new ArrayList<Hotissue>();
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue1);
-		
-		int actualCounts[] = hotissueDao.addHotissues(hotissues);
-		int actualCount = 0;
-		for (int affectedRow : actualCounts) {
-			actualCount += affectedRow;
-		}
 
-		assertThat(actualCount, is(1));
+	@Test
+	public void addHotissue_includeDucplicateKey() {
+		initDao();
+		
+		hotissues = Arrays.asList(new Hotissue[] {hotissue1, hotissue1, hotissue1});
+		
+		// add
+		int updateState[] = hotissueDao.addHotissues(hotissues);
+		assertThat(getCount(updateState), is(1));
 	}
+	
+	
+	// update
+	@Test
+	public void updateScores() {
+		initDao();
+		prepareHotissueDao(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		
+		hotissues = Arrays.asList(new Hotissue[] {new Hotissue(hotissue1.getId(), 11.1), new Hotissue(hotissue2.getId(), 22.2), new Hotissue(hotissue3.getId(), 33.3)});
+		int[] state = hotissueDao.updateScores(hotissues);
+		
+		assertThat(getCount(state), is(3));
+		assertThat(hotissueDao.findById(hotissue1.getId()).getScore(), is(hotissues.get(0).getScore()));
+		assertThat(hotissueDao.findById(hotissue2.getId()).getScore(), is(hotissues.get(1).getScore()));
+		assertThat(hotissueDao.findById(hotissue3.getId()).getScore(), is(hotissues.get(2).getScore()));
+		
+	}
+	
+	// update
+	@Test
+	public void updateScores_() {
+		initDao();
+		prepareHotissueDao(new Hotissue[]{hotissue1, hotissue1, hotissue1});
+		assertThat(hotissueDao.getCount(), is(1));
+		
+		hotissues = Arrays.asList(new Hotissue[] {new Hotissue(hotissue1.getId(), 11.1), new Hotissue(hotissue2.getId(), 22.2), new Hotissue(hotissue3.getId(), 33.3)});
+		int[] state = hotissueDao.updateScores(hotissues);
+		
+		assertThat(getCount(state), is(1));
+		assertThat(hotissueDao.findById(hotissue1.getId()).getScore(), is(hotissues.get(0).getScore()));		
+	}
+	
+	
+	
+	
 	
 	
 	@Test
 	public void getWithArticlesById() {
-		prepareHotissueDao();
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-
+		initDao();
+		hotissueDao.addHotissues(Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3}));
+		
+		
 		Article article1 = new Article(1, hotissue1, journal, section, "title1", "1111-01-01 01:11:11", "content1", 10000, 7000, 10.1);
 		Article article2 = new Article(2, hotissue1, journal, section, "title2", "1222-02-02 02:11:11", "content2", 20000, 8000, 20.1);
 		Article article3 = new Article(3, hotissue1, journal, section, "title3", "1333-03-03 03:11:11", "content3", 30000, 9000, 10.1);
@@ -177,96 +325,6 @@ public class HotissueDaoTest {
 	}
 	
 	
-	@Test
-	public void addAndGet() {
-		prepareHotissueDao();
-		
-		hotissueDao.add(hotissue1);
-		Hotissue actualHotissue1 = hotissueDao.get(1);
-		assertSameHotissue(actualHotissue1, hotissue1);
-		
-		hotissueDao.add(hotissue2);
-		Hotissue actualHotissue2 = hotissueDao.get(2);
-		assertSameHotissue(actualHotissue2, hotissue2);
-		
-		hotissueDao.add(hotissue3);
-		Hotissue actualHotissue3 = hotissueDao.get(3);
-		assertSameHotissue(actualHotissue3, hotissue3);
-	}
-	
-	@Test
-	public void get() {
-		prepareHotissueDao();
-		
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-		assertThat(hotissueDao.getCount(), is(3));
-		
-		Hotissue actualHotissue1 = hotissueDao.get(hotissue1.getId());
-		assertSameHotissue(actualHotissue1, hotissue1);
-		
-		Hotissue actualHotissue2 = hotissueDao.get(hotissue2.getId());
-		assertSameHotissue(actualHotissue2, hotissue2);
-		
-		Hotissue actualHotissue3 = hotissueDao.get(hotissue3.getId());
-		assertSameHotissue(actualHotissue3, hotissue3);
-	}
-
-
-	@Test
-	public void getByOrderedScore() {
-		prepareHotissueDao();
-		
-		hotissue1.setScore(10.1);
-		hotissue2.setScore(20.1);
-		hotissue3.setScore(30.1);
-		
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-		
-		final int size = 2;
-		List<Hotissue> actualHotissues = hotissueDao.getByOrderedScore(size);
-		
-		assertThat(actualHotissues.size(), is(size));
-		assertThat(actualHotissues.get(0).getScore(), is(30.1));
-		assertThat(actualHotissues.get(1).getScore(), is(20.1));
-	}
-	
-	@Test
-	public void getByName() {
-		prepareHotissueDao();
-		
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-		assertThat(hotissueDao.getCount(), is(3));
-		
-		Hotissue actualHotissue1 = hotissueDao.getByName(hotissue1.getName());
-		assertSameHotissue(actualHotissue1, hotissue1);
-		
-		Hotissue actualHotissue2 = hotissueDao.getByName(hotissue2.getName());
-		assertSameHotissue(actualHotissue2, hotissue2);
-		
-		Hotissue actualHotissue3 = hotissueDao.getByName(hotissue3.getName());
-		assertSameHotissue(actualHotissue3, hotissue3);
-		
-	}
-	
-	@Test(expected=EmptyResultDataAccessException.class)
-	public void notGetByName() {
-		prepareHotissueDao();
-		
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-		assertThat(hotissueDao.getCount(), is(3));
-		
-		Hotissue fakeHotissue = new Hotissue("face hotissue");
-		Hotissue actualHotissue = hotissueDao.getByName(fakeHotissue.getName());
-		assertSameHotissue(actualHotissue, fakeHotissue);
-	}
 	
 	@Test
 	public void delete() {
@@ -303,27 +361,6 @@ public class HotissueDaoTest {
 		hotissueDao.delete(1);
 	}
 	
-	@Test
-	public void updateScores() {
-		prepareHotissueDao();
-		
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-		
-		List<Hotissue> updatedHotissues = new ArrayList<Hotissue>();
-		updatedHotissues.add(new Hotissue(hotissue1.getId(), 11.1));
-		updatedHotissues.add(new Hotissue(hotissue2.getId(), 22.2));
-		updatedHotissues.add(new Hotissue(hotissue3.getId(), 33.3));
-		
-		int[] state = hotissueDao.updateScores(updatedHotissues);
-		
-		assertThat(getCount(state), is(3));
-		assertThat(hotissueDao.get(hotissue1.getId()).getScore(), is(updatedHotissues.get(0).getScore()));
-		assertThat(hotissueDao.get(hotissue2.getId()).getScore(), is(updatedHotissues.get(1).getScore()));
-		assertThat(hotissueDao.get(hotissue3.getId()).getScore(), is(updatedHotissues.get(2).getScore()));
-		
-	}
 	
 //	@Test
 //	public void getBetweenServiceDates() {
@@ -339,17 +376,10 @@ public class HotissueDaoTest {
 //	}
 	
 
-	private void assertSameHotissue(Hotissue actual, Hotissue expected) {
+	private void assertSameStandardHotissue(Hotissue actual, Hotissue expected) {
+		assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getName(), is(expected.getName()));
-		
-		if(expected.getTimestamp().charAt(0) != '1') {
-			assertThat(actual.getTimestamp(), is(expected.getTimestamp()));
-		}
-	}
-	
-	private void prepareHotissueDao() {
-		hotissueDao.deleteAll();
-		assertThat(hotissueDao.getCount(), is(0));
+		assertThat(ElixirUtils.parseFormattedDate(actual.getTimestamp()), is(notNullValue()));
 	}
 	
 	private int getCount(int[] affectedRows) {
@@ -361,5 +391,30 @@ public class HotissueDaoTest {
 		
 		return size;
 	}
+	
+	private void initDao() {
+		articleDao.deleteAll();
+		hotissueDao.deleteAll();
+		assertThat(hotissueDao.getCount(), is(0));
+	}
+	
+	private void prepareHotissueDao(Hotissue[] hotissues) {
+		hotissueDao.addHotissues(Arrays.asList(hotissues));
+	}
+	
+	private void updateHotissueScore(Hotissue[] hotissues) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void makeFixtures() {
+		journal = new Journal(84);
+		section = new Section(3);
+		
+		hotissue1 = new Hotissue(1, "hotissue1");
+		hotissue2 = new Hotissue(2, "hotissue2");
+		hotissue3 = new Hotissue(3, "hotissue3");
+	}
+
 
 }
