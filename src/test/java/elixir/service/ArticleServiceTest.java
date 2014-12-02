@@ -78,25 +78,25 @@ public class ArticleServiceTest {
 
 	@Test
 	public void has() {
-		when(articleDaoMock.get(article1.hashCode())).thenReturn(article1);
+		when(articleDaoMock.findById(article1.hashCode())).thenReturn(article1);
 		assertThat(articleService.has(article1.hashCode()), is(true));
 		
-		when(articleDaoMock.get(article2.hashCode())).thenReturn(article2);
+		when(articleDaoMock.findById(article2.hashCode())).thenReturn(article2);
 		assertThat(articleService.has(article2.hashCode()), is(true));
 		
-		when(articleDaoMock.get(article3.hashCode())).thenReturn(article3);
+		when(articleDaoMock.findById(article3.hashCode())).thenReturn(article3);
 		assertThat(articleService.has(article3.hashCode()), is(true));
 	}
 	
 	@Test
 	public void hasNot() {
-		when(articleDaoMock.get(article1.hashCode())).thenThrow(EmptyResultDataAccessException.class);
+		when(articleDaoMock.findById(article1.hashCode())).thenThrow(EmptyResultDataAccessException.class);
 		assertThat(articleService.has(article1.hashCode()), is(false));
 		
-		when(articleDaoMock.get(article2.hashCode())).thenThrow(EmptyResultDataAccessException.class);
+		when(articleDaoMock.findById(article2.hashCode())).thenThrow(EmptyResultDataAccessException.class);
 		assertThat(articleService.has(article2.hashCode()), is(false));
 		
-		when(articleDaoMock.get(article3.hashCode())).thenThrow(EmptyResultDataAccessException.class);
+		when(articleDaoMock.findById(article3.hashCode())).thenThrow(EmptyResultDataAccessException.class);
 		assertThat(articleService.has(article3.hashCode()), is(false));
 	}
 	
@@ -115,7 +115,7 @@ public class ArticleServiceTest {
 	
 	@Test
 	public void notAdd() {
-		doThrow(DuplicateKeyException.class).when(articleDaoMock).add(any(Article.class));
+		doThrow(DuplicateKeyException.class).when(articleDaoMock).addArticle(any(Article.class));
 		
 		int expectedArticle1Id = article1.hashCode();
 		assertThat(articleService.add(article1), is(expectedArticle1Id));
@@ -135,13 +135,13 @@ public class ArticleServiceTest {
 		article2.setHotissue(hotissue2);
 		article3.setHotissue(hotissue3);
 		
-		when(articleDaoMock.get(article1.hashCode())).thenReturn(article1);		
-		when(articleDaoMock.get(article2.hashCode())).thenReturn(article2);
-		when(articleDaoMock.get(article3.hashCode())).thenReturn(article3);
+		when(articleDaoMock.findById(article1.hashCode())).thenReturn(article1);		
+		when(articleDaoMock.findById(article2.hashCode())).thenReturn(article2);
+		when(articleDaoMock.findById(article3.hashCode())).thenReturn(article3);
 		
-		when(articleDaoMock.delete(article1.hashCode())).thenReturn(1);
-		when(articleDaoMock.delete(article2.hashCode())).thenReturn(1);
-		when(articleDaoMock.delete(article3.hashCode())).thenReturn(1);
+		when(articleDaoMock.deleteById(article1.hashCode())).thenReturn(1);
+		when(articleDaoMock.deleteById(article2.hashCode())).thenReturn(1);
+		when(articleDaoMock.deleteById(article3.hashCode())).thenReturn(1);
 
 		when(hotissueServiceMock.delete(hotissue1.getId())).thenReturn(1);
 		when(hotissueServiceMock.delete(hotissue2.getId())).thenReturn(1);
@@ -189,7 +189,7 @@ public class ArticleServiceTest {
 		articles.add(article2);
 		articles.add(article3);
 		
-		when(articleDaoMock.getArticlesBetweenDates(dates[0], dates[1])).thenReturn(articles);
+		when(articleDaoMock.findBetweenDates(dates)).thenReturn(articles);
 		when(articleDaoMock.updateScores(articles)).thenReturn(new int[] {1, 1, 1});
 		assertThat(articleService.calcScore(dates[0], dates[1]), is(3));
 	}
@@ -212,8 +212,8 @@ public class ArticleServiceTest {
 		List<Article> afternoonArticles = Arrays.asList(new Article[] {articles.get(3), articles.get(4)});
 
 
-		when(articleDaoMock.getArticlesBetweenDates(mornings[0], mornings[1])).thenReturn(morningArticles);		
-		when(articleDaoMock.getArticlesBetweenDates(afternoons[0], afternoons[1])).thenReturn(afternoonArticles);
+		when(articleDaoMock.findBetweenDates(mornings)).thenReturn(morningArticles);		
+		when(articleDaoMock.findBetweenDates(afternoons)).thenReturn(afternoonArticles);
 		
 		
 		List<Article> actualMorningArticles = articleService.getArticlesBetweenDates(mornings[0], mornings[1]);
@@ -236,7 +236,7 @@ public class ArticleServiceTest {
 		article2.setScore(20.1);
 		article3.setScore(30.1);
 		
-		when(articleDaoMock.getByOrderedScore(size)).thenReturn(Arrays.asList(new Article[]{article3, article2}));
+		when(articleDaoMock.findByScoreOrderFromOneTo(size)).thenReturn(Arrays.asList(new Article[]{article3, article2}));
 		
 		List<Article> actualArticles = articleService.getByOrderedScore(size);
 		assertThat(actualArticles.size(), is(size));
@@ -254,7 +254,7 @@ public class ArticleServiceTest {
 		articles.add(article2);
 		articles.add(article3);
 		
-		when(articleDaoMock.getArticlesBetweenServiceDates(dates[0], dates[1])).thenReturn(articles);
+		when(articleDaoMock.findBetweenDatesAtHalfDay(dates)).thenReturn(articles);
 		
 		List<Article> actualArticles = articleService.getArticlesByServiceDate(date);
 		assertThat(actualArticles.size(), is(articles.size()));
@@ -267,7 +267,7 @@ public class ArticleServiceTest {
 		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
 		int sequence = 1;
 		
-		when(articleDaoMock.getBySequenceBetweenServiceDates(sequence, dates[0], dates[1])).thenReturn(article1);
+		when(articleDaoMock.findBySequenceBetweenDatesAtHalfDay(dates,sequence)).thenReturn(article1);
 		
 		Article actualArticle = articleService.getBySequenceAndServiceDate(sequence, date);
 		assertThat(actualArticle.getId(), is(article1.getId()));

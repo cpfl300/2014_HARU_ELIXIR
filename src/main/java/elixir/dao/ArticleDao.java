@@ -1,13 +1,18 @@
 package elixir.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import elixir.model.Article;
@@ -39,7 +44,31 @@ public class ArticleDao {
 		article.setHits(rs.getInt("hits"));
 		article.setCompletedReadingCount(rs.getInt("completed_reading_count"));
 		article.setScore(rs.getDouble("score"));
+		article.setTimestamp(rs.getString("timestamp"));		
+		
+		return article;
+	};
+	
+	private RowMapper<Article> articleForHalfDayMapper = (rs, rowNum) -> {		
+		Article article = new Article();
+		Hotissue hotissue = new Hotissue(rs.getInt("hotissues_id"));
+		Journal journal = new Journal(rs.getInt("journals_id"));
+		Section section = new Section(rs.getInt("minor_sections_id"));
+		
+		article.setHotissue(hotissue);
+		article.setJournal(journal);
+		article.setSection(section);
+		
+		article.setId(rs.getInt("id"));
+		article.setTitle(rs.getString("title"));
+		article.setDate(rs.getString("date"));
+		article.setContent(rs.getString("content"));
+		article.setHits(rs.getInt("hits"));
+		article.setCompletedReadingCount(rs.getInt("completed_reading_count"));
+		article.setScore(rs.getDouble("score"));
 		article.setTimestamp(rs.getString("timestamp"));
+		
+		article.setSequence(rs.getInt("sequence"));
 		
 		return article;
 	};
@@ -56,7 +85,7 @@ public class ArticleDao {
 
 	}
 
-	public void add(Article article) {
+	public void addArticle(Article article) {
 		
 		this.jdbcTemplate.update(
 				"insert into articles(id, hotissues_id, title, journals_id, minor_sections_id, date, content, hits, completed_reading_count, score) values (?,?,?,?,?,?,?,?,?,?)",
@@ -74,7 +103,7 @@ public class ArticleDao {
 		
 	}
 
-	public Article get(int id) {
+	public Article findById(int id) {
 		
 		return this.jdbcTemplate.queryForObject (
 					"SELECT * FROM articles WHERE id = ?",
@@ -83,7 +112,7 @@ public class ArticleDao {
 				);
 	}
 
-	public int delete(int id) {
+	public int deleteById(int id) {
 		
 		return this.jdbcTemplate.update(
 					"DELETE FROM articles WHERE id = ?",
@@ -95,7 +124,7 @@ public class ArticleDao {
 	public int[] addArticles(final List<Article> articles) {
 		
 		int[] updateCounts = this.jdbcTemplate.batchUpdate(
-					"INSERT IGNORE INTO articles(id, hotissues_id, title, journals_id, minor_sections_id, date, content, hits, completed_reading_count) VALUES (?,?,?,?,?,?,?,?,?)",
+					"INSERT IGNORE INTO articles(id, hotissues_id, title, journals_id, minor_sections_id, date, content, hits, completed_reading_count, score) VALUES (?,?,?,?,?,?,?,?,?,?)",
 					new BatchPreparedStatementSetter() {
 	
 						@Override
@@ -110,6 +139,7 @@ public class ArticleDao {
 							ps.setString(7, article.getContent());
 							ps.setInt(8, article.getHits());
 							ps.setInt(9, article.getCompletedReadingCount());
+							ps.setDouble(10, article.getScore());
 						}
 	
 						@Override
@@ -148,16 +178,16 @@ public class ArticleDao {
 				);
 	}
 
-	public List<Article> getArticlesBetweenDates(String from, String to) {
+	public List<Article> findBetweenDates(String[] dates) {
 		
 		return this.jdbcTemplate.query(
 					"SELECT * FROM articles WHERE (date BETWEEN ? AND ?)",
-					new Object[] {from, to},
+					new Object[] {dates[0], dates[1]},
 					this.articleMapper
 				);
 	}
 
-	public List<Article> getByOrderedScore(int size) {
+	public List<Article> findByScoreOrderFromOneTo(int size) {
 		
 		return this.jdbcTemplate.query(
 					"SELECT * FROM articles ORDER BY score DESC LIMIT ?",
@@ -167,37 +197,132 @@ public class ArticleDao {
 				
 	}
 
-	public List<Article> getArticlesBetweenServiceDates(String from, String to) {
+
+	public int getCountAtHalfDay() {
+		
+		return this.jdbcTemplate.queryForInt("SELECT count(*) FROM half_day");
+	}
+
+	public int deleteAllAtHalfDay() {
+		
+		return this.jdbcTemplate.update("DELETE FROM half_day");
+		
+	}
+
+	public int addArticleAtHalfDay(Article article) {
+		KeyHolder holder = new GeneratedKeyHolder();
+
+		this.jdbcTemplate.update(new PreparedStatementCreator() {           
+
+		                @Override
+		                public PreparedStatement createPreparedStatement(Connection conn)
+		                        throws SQLException {
+		                    PreparedStatement ps = conn.prepareStatement(
+		                    		"INSERT INTO half_day (timestamp, sequence, articles_id) VALUES (?, ?, ?)",
+		                    		Statement.RETURN_GENERATED_KEYS);
+		                    ps.setString(1, article.getTimestamp());
+							ps.setInt(2, article.getSequence());
+							ps.setInt(3, article.getId());
+		                    
+		                    return ps;
+		                }
+		            }, holder);
+
+		return holder.getKey().intValue();
+		
+	}
+
+	public int[] addArticlesAtHalfDay(final List<Article> articles) {
+		
+		return this.jdbcTemplate.batchUpdate(
+					"INSERT IGNORE INTO half_day (timestamp, sequence, articles_id) VALUES (?, ?, ?)",
+					new BatchPreparedStatementSetter() {
+
+						@Override
+						public void setValues(PreparedStatement ps, int i) throws SQLException {
+							Article article = articles.get(i);
+							ps.setString(1, article.getTimestamp());
+							ps.setInt(2, article.getSequence());
+							ps.setInt(3, article.getId());
+						}
+
+						@Override
+						public int getBatchSize() {
+							
+							return articles.size();
+						}
+						
+					}
+				
+				);
+	}
+
+	public Article findByArticleIdAtHalfDay(int articleId) {
+		
+		return this.jdbcTemplate.queryForObject(
+					"SELECT "
+						+ "articles.id, articles.title, articles.date, articles.content, articles.timestamp, "
+						+ "articles.journals_id, articles.hotissues_id, articles.minor_sections_id, "
+						+ "articles.hits, articles.completed_reading_count, articles.score, "
+						+ "half_day.sequence AS sequence "
+						+ "FROM (SELECT * FROM half_day WHERE articles_id = ?) AS half_day "
+						+ "INNER JOIN articles "
+						+ "ON half_day.articles_id = articles.id",
+					new Object[] { articleId },
+					this.articleForHalfDayMapper
+				);
+	}
+
+	public Article findByIdAtHalfDay(int id) {
+		
+		return this.jdbcTemplate.queryForObject(
+				"SELECT "
+					+ "articles.id, articles.title, articles.date, articles.content, articles.timestamp, "
+					+ "articles.journals_id, articles.hotissues_id, articles.minor_sections_id, "
+					+ "articles.hits, articles.completed_reading_count, articles.score, "
+					+ "half_day.sequence AS sequence "
+					+ "FROM (SELECT * FROM half_day WHERE id = ?) AS half_day "
+					+ "INNER JOIN articles "
+					+ "ON half_day.articles_id = articles.id",
+				new Object[] { id },
+				this.articleForHalfDayMapper
+			);
+	}
+	
+	public List<Article> findBetweenDatesAtHalfDay(String[] dates) {
 		
 		return this.jdbcTemplate.query(
 					"SELECT "
 					+ "articles.id, articles.title, articles.date, articles.content, articles.timestamp, "
 					+ "articles.journals_id, articles.hotissues_id, articles.minor_sections_id, "
-					+ "articles.hits, articles.completed_reading_count, articles.score "
+					+ "articles.hits, articles.completed_reading_count, articles.score, "
+					+ "half_day.sequence AS sequence "
 					+ "FROM (SELECT * FROM half_day WHERE timestamp BETWEEN ? AND ?) AS half_day "
 					+ "INNER JOIN articles "
 					+ "ON half_day.articles_id = articles.id "
 					+ "ORDER BY half_day.sequence",
 					
-					new Object[] {from, to},
-					this.articleMapper
+					new Object[] {dates[0], dates[1]},
+					this.articleForHalfDayMapper
 				);
 	}
 
-	public Article getBySequenceBetweenServiceDates(int sequence, String from, String to) {
+	public Article findBySequenceBetweenDatesAtHalfDay(String[] dates,  int sequence) {
 		
 		return this.jdbcTemplate.queryForObject(
 				"SELECT "
 				+ "articles.id, articles.title, articles.date, articles.content, articles.timestamp, "
 				+ "articles.journals_id, articles.hotissues_id, articles.minor_sections_id, "
-				+ "articles.hits, articles.completed_reading_count, articles.score "
+				+ "articles.hits, articles.completed_reading_count, articles.score, "
+				+ "half_day.sequence AS sequence "
 				+ "FROM (SELECT * FROM half_day WHERE timestamp BETWEEN ? AND ? AND sequence = ?) AS half_day "
 				+ "INNER JOIN articles "
 				+ "ON half_day.articles_id = articles.id "
 				+ "ORDER BY half_day.sequence",
 				
-				new Object[] {from, to, sequence},
-				this.articleMapper
+				new Object[] {dates[0], dates[1], sequence},
+				this.articleForHalfDayMapper
 			);
 	}
+
 }

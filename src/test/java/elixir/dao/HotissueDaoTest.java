@@ -129,9 +129,9 @@ public class HotissueDaoTest {
 		Article article2 = new Article(2, hotissue1, journal, section, "title2", "1222-02-02 02:11:11", "content2", 20000, 8000, 20.1);
 		Article article3 = new Article(3, hotissue1, journal, section, "title3", "1333-03-03 03:11:11", "content3", 30000, 9000, 10.1);
 		
-		articleDao.add(article1);
-		articleDao.add(article2);
-		articleDao.add(article3);
+		articleDao.addArticle(article1);
+		articleDao.addArticle(article2);
+		articleDao.addArticle(article3);
 		assertThat(articleDao.getCount(), is(3));
 		
 		Hotissue actualHotissue = hotissueDao.getWithArticlesById(hotissue1.getId());
@@ -158,12 +158,12 @@ public class HotissueDaoTest {
 		Article article31 = new Article(31, hotissue3, journal, section, "title31", "1333-03-03 03:11:11", "content31", 31000, 9100, 10.1);
 		Article article32 = new Article(32, hotissue3, journal, section, "title32", "1333-03-03 03:11:12", "content32", 32000, 9200, 20.1);
 		
-		articleDao.add(article11);
-		articleDao.add(article12);
-		articleDao.add(article21);
-		articleDao.add(article22);
-		articleDao.add(article31);
-		articleDao.add(article32);
+		articleDao.addArticle(article11);
+		articleDao.addArticle(article12);
+		articleDao.addArticle(article21);
+		articleDao.addArticle(article22);
+		articleDao.addArticle(article31);
+		articleDao.addArticle(article32);
 		
 		assertThat(articleDao.getCount(), is(6));
 		assertThat(hotissueDao.getCount(), is(3));
@@ -298,7 +298,7 @@ public class HotissueDaoTest {
 		Hotissue hotissue = new Hotissue(1);
 		
 		Article article = new Article(1, hotissue, journal, section, "title1", "1111-01-01 01:11:11", "content1", 10000, 7000, 10.1);
-		articleDao.add(article);
+		articleDao.addArticle(article);
 		
 		hotissueDao.delete(1);
 	}

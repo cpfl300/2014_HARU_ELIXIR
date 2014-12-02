@@ -3,13 +3,8 @@ package elixir.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 public class Article {
-	
-	private static final Logger log = LoggerFactory.getLogger(Article.class);
 	
 	private int id;
 	private Hotissue hotissue;
@@ -23,6 +18,14 @@ public class Article {
 	private double score;
 	private String timestamp;
 	private int sequence;
+	
+	
+	// half_day
+	public Article(int id, int sequence, String timestamp) {
+		this.id = id;
+		this.sequence = sequence;
+		this.timestamp = timestamp;
+	}
 
 
 	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
@@ -54,11 +57,7 @@ public class Article {
 		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
 	}
 	
-	public Article(int id, int sequence, String timestamp) {
-		this.id = id;
-		this.sequence = sequence;
-		this.timestamp = timestamp;
-	}
+	
 	
 	public Article() {
 
