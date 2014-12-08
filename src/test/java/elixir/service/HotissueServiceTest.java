@@ -1,6 +1,7 @@
 package elixir.service;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -8,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +19,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import elixir.dao.HotissueDao;
 import elixir.model.Article;
@@ -29,6 +33,8 @@ import elixir.utility.ElixirUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HotissueServiceTest {
+	
+	private static final Logger log = LoggerFactory.getLogger(HotissueServiceTest.class);
 	
 	@InjectMocks
 	private HotissueService hotissueService;
@@ -55,95 +61,9 @@ public class HotissueServiceTest {
 	
 	@Before
 	public void setup() {
-		makeJournalFixtures();
-		makeSectionFixtures();
-		
-		// fixtures
-		hotissue1 = new Hotissue(1, "hotissue1");
-		hotissue2 = new Hotissue(2, "hotissue2");
-		hotissue3 = new Hotissue(3, "hotissue3");
+		makeFixtures();
 	}
 
-	@Test
-	public void add() {
-		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenReturn(hotissue1);
-		when(hotissueDaoMock.findById(hotissue2.hashCode())).thenReturn(hotissue2);
-		when(hotissueDaoMock.findById(hotissue3.hashCode())).thenReturn(hotissue3);
-		
-		int actualHotissue1Key = hotissueService.add(hotissue1); 
-		assertThat(actualHotissue1Key, is(hotissue1.hashCode()));
-		
-		int actualHotissue2Key = hotissueService.add(hotissue2); 
-		assertThat(actualHotissue2Key, is(hotissue2.hashCode()));
-		
-		int actualHotissue3Key = hotissueService.add(hotissue3); 
-		assertThat(actualHotissue3Key, is(hotissue3.hashCode()));
-	}
-	
-	@Test
-	public void notAdd() {
-		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenThrow(EmptyResultDataAccessException.class);
-		
-		int actualHotissue1Key = hotissueService.add(hotissue1); 
-		assertThat(actualHotissue1Key, is(hotissue1.hashCode()));
-		
-		int actualHotissue2Key = hotissueService.add(hotissue2); 
-		assertThat(actualHotissue2Key, is(hotissue2.hashCode()));
-		
-		int actualHotissue3Key = hotissueService.add(hotissue3); 
-		assertThat(actualHotissue3Key, is(hotissue3.hashCode()));
-	}
-	
-	
-	@Test
-	public void addHotissues() {
-		hotissues = new ArrayList<Hotissue>();
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue2);
-		hotissues.add(hotissue3);
-		
-		when(hotissueDaoMock.addHotissues(hotissues)).thenReturn(new int[] {1, 1, 1});
-		
-		int actualSize = hotissueService.addHotissues(hotissues);
-		assertThat(actualSize, is(3));
-	}
-	
-	@Test
-	public void addHotissuesIncludedDuplicateKey() {
-		hotissues = new ArrayList<Hotissue>();
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue1);
-		
-		when(hotissueDaoMock.addHotissues(hotissues)).thenReturn(new int[] {1, 0, 0});
-		
-		int actualSize = hotissueService.addHotissues(hotissues);
-		assertThat(actualSize, is(1));
-	}
-	
-	@Test
-	public void delete() {
-		when(hotissueDaoMock.delete(hotissue1.hashCode())).thenReturn(1);
-		when(hotissueDaoMock.delete(hotissue2.hashCode())).thenReturn(1);
-		when(hotissueDaoMock.delete(hotissue3.hashCode())).thenReturn(1);
-		
-		assertThat(hotissueService.delete(hotissue1.hashCode()), is(1));
-		assertThat(hotissueService.delete(hotissue2.hashCode()), is(1));
-		assertThat(hotissueService.delete(hotissue3.hashCode()), is(1));
-	}
-	
-	@Test
-	public void notDelete() {
-		when(hotissueDaoMock.delete(hotissue1.hashCode())).thenThrow(DataIntegrityViolationException.class);
-		assertThat(hotissueService.delete(hotissue1.hashCode()), is(0));
-		
-		when(hotissueDaoMock.delete(hotissue2.hashCode())).thenThrow(DataIntegrityViolationException.class);
-		assertThat(hotissueService.delete(hotissue2.hashCode()), is(0));
-		
-		when(hotissueDaoMock.delete(hotissue3.hashCode())).thenThrow(DataIntegrityViolationException.class);
-		assertThat(hotissueService.delete(hotissue3.hashCode()), is(0));
-	}
-	
 	@Test
 	public void calcScore() {
 		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.DECEMBER , 7, 6);
@@ -191,22 +111,7 @@ public class HotissueServiceTest {
 		assertThat(actualHotissues.get(1).getArticles().get(0).getId(), is(2));
 		
 	}
-	
-	@Test
-	public void getByServiceDate() {
-		Date date = ElixirUtils.getDate(2014, Calendar.NOVEMBER, 28, 6);
-		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
-		
-		hotissues = new ArrayList<Hotissue>();
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue2);
-		hotissues.add(hotissue3);
-		
-		when(hotissueDaoMock.getBetweenServiceDates(dates[0], dates[1])).thenReturn(hotissues);
-		
-		List<Hotissue> actualHotissues = hotissueService.getByServiceDate(date);
-		assertThat(actualHotissues.size(), is(hotissues.size()));		
-	}
+
 
 
 	private List<Article> makeArticleFixtures() {
@@ -227,15 +132,138 @@ public class HotissueServiceTest {
 		return articles;
 	}
 	
-	private void makeSectionFixtures() {
+
+	
+	
+	////////////
+	
+	@Test
+	public void add() {
+		// prepare
+		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenReturn(hotissue1);
+		when(hotissueDaoMock.findById(hotissue2.hashCode())).thenReturn(hotissue2);
+		when(hotissueDaoMock.findById(hotissue3.hashCode())).thenReturn(hotissue3);
+		
+		// add
+		int actualId1 = hotissueService.add(hotissue1); 
+		assertThat(actualId1, is(hotissue1.getId()));
+		
+		int actualId2 = hotissueService.add(hotissue2); 
+		assertThat(actualId2, is(hotissue2.getId()));
+		
+		int actualId3 = hotissueService.add(hotissue3); 
+		assertThat(actualId3, is(hotissue3.getId()));
+	}
+	
+	@Test
+	public void add_alreadyExistHotissue() {
+		// prepare
+		when(hotissueDaoMock.findById(hotissue1.hashCode())).thenReturn(hotissue1);
+		
+		// add
+		int actualId1 = hotissueService.add(hotissue1); 
+		assertThat(actualId1, is(hotissue1.getId()));
+		
+		int actualId2 = hotissueService.add(hotissue1); 
+		assertThat(actualId2, is(hotissue1.getId()));
+		
+		int actualId3 = hotissueService.add(hotissue1); 
+		assertThat(actualId3, is(hotissue1.getId()));
+	}
+	
+	@Test
+	public void addHotissues() {
+		// prepare
+		hotissues = Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		int[] expectedResult = new int[]{1,1,1};
+		when(hotissueDaoMock.addHotissues(hotissues)).thenReturn(expectedResult);
+		
+		// add
+		Set<Integer> actualSet = hotissueService.addHotissues(hotissues);
+		
+		// assert
+		assertThat(actualSet.size(), is(getCount(expectedResult)));
+		for (Hotissue e : hotissues) {
+			assertThat(actualSet, hasItem(e.getId()));
+		}
+	}
+	
+	@Test
+	public void addHotissues_includedDuplicateKey() {
+		// prepare
+		hotissues = Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+		int[] expectedResult = new int[]{1,0,1};
+		when(hotissueDaoMock.addHotissues(hotissues)).thenReturn(expectedResult);
+		
+		// add
+		Set<Integer> actualSet = hotissueService.addHotissues(hotissues);
+		
+		// assert
+		assertThat(actualSet.size(), is(getCount(expectedResult)));
+		for (int i=0; i<expectedResult.length; i++) {
+			if (expectedResult[i] == 0) continue;
+			assertThat(actualSet, hasItem(hotissues.get(i).getId()));
+		}
+	}
+	
+
+//	@Test
+//	public void getHalfDay() {
+//		// prepare
+//		hotissues = Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3});
+//		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 28, 6);
+//		
+//		// mock
+//		when(hotissueDaoMock.findBetweenDatesAtHalfDay(dates)).thenReturn(hotissues);
+//		
+//		List<Hotissue> actualHotissues = hotissueService.getHalfDay();
+//		
+//	}
+//	
+	
+	
+	
+	@Test
+	public void getByServiceDate() {
+		Date date = ElixirUtils.getDate(2014, Calendar.NOVEMBER, 28, 6);
+		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
+		
+		hotissues = new ArrayList<Hotissue>();
+		hotissues.add(hotissue1);
+		hotissues.add(hotissue2);
+		hotissues.add(hotissue3);
+		
+		when(hotissueDaoMock.getBetweenServiceDates(dates[0], dates[1])).thenReturn(hotissues);
+		
+		List<Hotissue> actualHotissues = hotissueService.getByServiceDate(date);
+		assertThat(actualHotissues.size(), is(hotissues.size()));		
+	}
+	
+	
+	private void makeFixtures() {
 		section1 = new Section(3);
 		section2 = new Section(10);
-		section3 = new Section(23);		
-	}
-
-	private void makeJournalFixtures() {
+		section3 = new Section(23);
+		
 		journal1 = new Journal(84);
 		journal2 = new Journal(10);
 		journal3 = new Journal(23);		
+
+		// fixtures
+		hotissue1 = new Hotissue("hotissue1");
+		hotissue2 = new Hotissue("hotissue2");
+		hotissue3 = new Hotissue("hotissue3");
+		
 	}
+	
+	private int getCount(int[] rows) {
+		int count = 0;
+		
+		for (int row : rows) {
+			count += row;
+		}
+		
+		return count;
+	}
+
 }

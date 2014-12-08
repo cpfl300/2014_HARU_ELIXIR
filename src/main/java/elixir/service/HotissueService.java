@@ -1,8 +1,10 @@
 package elixir.service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +36,6 @@ public class HotissueService {
 		int id = hotissue.hashCode();
 		hotissue.setId(id);
 		
-		log.debug("hotissue id: " + id);
-		
 		try {
 			hotissueDao.findById(id);
 			
@@ -48,6 +48,25 @@ public class HotissueService {
 			
 	}
 	
+	public Set<Integer> addHotissues(List<Hotissue> hotissues) {
+		
+		setId(hotissues);
+		int[] updateState = hotissueDao.addHotissues(hotissues);
+
+		return extractSucceedHotissue(updateState, hotissues);
+	}
+	
+	
+	private Set<Integer> extractSucceedHotissue(int[] updateState, List<Hotissue> hotissues) {
+		Set<Integer> succeed = new HashSet<Integer>();
+		for (int i=0; i<updateState.length; i++) {
+			if (updateState[i] == 0) continue;
+			succeed.add(hotissues.get(i).getId());
+		}
+		
+		return succeed;
+	}
+
 	public Hotissue getById(int id) {
 		Hotissue result = null;
 
@@ -63,13 +82,7 @@ public class HotissueService {
 
 
 
-	public int addHotissues(List<Hotissue> hotissues) {
-		
-		setId(hotissues);
-		int[] affectedRows = hotissueDao.addHotissues(hotissues);
-		
-		return getCount(affectedRows);
-	}
+	
 
 
 	@Transactional

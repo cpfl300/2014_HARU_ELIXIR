@@ -85,7 +85,7 @@ public class ArticleDao {
 
 	}
 
-	public void addArticle(Article article) {
+	public void add(Article article) {
 		
 		this.jdbcTemplate.update(
 				"insert into articles(id, hotissues_id, title, journals_id, minor_sections_id, date, content, hits, completed_reading_count, score) values (?,?,?,?,?,?,?,?,?,?)",
@@ -209,7 +209,7 @@ public class ArticleDao {
 		
 	}
 
-	public int addArticleAtHalfDay(Article article) {
+	public int addAtHalfDay(Article article) {
 		KeyHolder holder = new GeneratedKeyHolder();
 
 		this.jdbcTemplate.update(new PreparedStatementCreator() {           
@@ -254,22 +254,6 @@ public class ArticleDao {
 						
 					}
 				
-				);
-	}
-
-	public Article findByArticleIdAtHalfDay(int articleId) {
-		
-		return this.jdbcTemplate.queryForObject(
-					"SELECT "
-						+ "articles.id, articles.title, articles.date, articles.content, articles.timestamp, "
-						+ "articles.journals_id, articles.hotissues_id, articles.minor_sections_id, "
-						+ "articles.hits, articles.completed_reading_count, articles.score, "
-						+ "half_day.sequence AS sequence "
-						+ "FROM (SELECT * FROM half_day WHERE articles_id = ?) AS half_day "
-						+ "INNER JOIN articles "
-						+ "ON half_day.articles_id = articles.id",
-					new Object[] { articleId },
-					this.articleForHalfDayMapper
 				);
 	}
 

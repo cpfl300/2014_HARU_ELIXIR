@@ -43,6 +43,11 @@ public class Hotissue {
 		this.score = score;
 	}
 	
+	public Hotissue(String name, String timestamp) {
+		this.name = name;
+		this.timestamp = timestamp;
+	}
+	
 //
 //	
 //	public Hotissue(int id, String name, String timestamp, int sequence) {
@@ -56,7 +61,6 @@ public class Hotissue {
 //		this(0, name, timestamp);
 //	}
 //
-
 
 	public int getId() {
 		return id;

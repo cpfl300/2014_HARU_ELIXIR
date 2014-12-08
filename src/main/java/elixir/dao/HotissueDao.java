@@ -35,7 +35,18 @@ public class HotissueDao {
 		return hotissue;	
 	};
 	
+	private RowMapper<Hotissue> hotissueMapperAtHalfDay = (rs, rowNum) -> {		
+		Hotissue hotissue = new Hotissue();
+		hotissue.setId(rs.getInt("id"));
+		hotissue.setName(rs.getString("name"));
+		hotissue.setTimestamp(rs.getString("timestamp"));
+		hotissue.setScore(rs.getDouble("score"));
+		hotissue.setSequence(rs.getInt("sequence"));
+
+		return hotissue;	
+	};
 	
+
 	private RowMapper<Hotissue> hotissueWithArticlesMapper = (rs, rowNum) -> {
 		
 		ResultSetExtractor<Hotissue> hotissueResultSetExtractor = new ResultSetExtractor<Hotissue>() {
@@ -77,42 +88,23 @@ public class HotissueDao {
 		return hotissueResultSetExtractor.extractData(rs);
 	};
 
-	private RowMapper<Hotissue> hotissueWithArticleMapper = (rs, rowNum) -> {		
-		Hotissue hotissue = new Hotissue();
-		hotissue.setId(rs.getInt("hotissues.id"));
-		hotissue.setName(rs.getString("hotissues.name"));
-		hotissue.setTimestamp(rs.getString("hotissues.timestamp"));
-		
-		List<Article> articles = new ArrayList<Article>();
-		Article article = new Article();
-		Journal journal = new Journal(rs.getInt("articles.journals_id"));
-		Section section = new Section(rs.getInt("articles.minor_sections_id"));
-		
-		article.setJournal(journal);
-		article.setSection(section);
-		
-		article.setId(rs.getInt("articles.id"));
-		article.setTitle(rs.getString("articles.title"));
-		article.setDate(rs.getString("articles.date"));
-		article.setContent(rs.getString("articles.content"));
-		article.setHits(rs.getInt("articles.hits"));
-		article.setCompletedReadingCount(rs.getInt("articles.completed_reading_count"));
-		article.setTimestamp(rs.getString("articles.timestamp"));
-		article.setScore(rs.getDouble("articles.score"));
-		
-		articles.add(article);		
-		hotissue.setArticles(articles);
-
-		return hotissue;	
-	};
-	
-	
 	
 	public int deleteAll() {
 		
 		return this.jdbcTemplate.update("delete from hotissues");
 
 	}
+	
+
+	public int deleteById(int id) {
+		
+		return this.jdbcTemplate.update(
+					"DELETE FROM hotissues WHERE id = ?",
+					new Object[] {id}
+				);
+		
+	}
+
 
 	public int getCount() {
 		
@@ -137,23 +129,18 @@ public class HotissueDao {
 				);
 	}
 
-	public int lastInsertId() {
-		
-		return this.jdbcTemplate.queryForInt("select last_insert_id()"); 
-	}
-
-	public Hotissue getWithArticlesById(int hotissueId) {
+	public Hotissue findByIdWithArticles(int id) {
 		
 		return this.jdbcTemplate.queryForObject(
 					"SELECT * FROM hotissues INNER JOIN articles ON articles.hotissues_id = hotissues.id WHERE hotissues.id = ?",
-					new Object[]{hotissueId},
+					new Object[]{id},
 					this.hotissueWithArticlesMapper
 				);
 			
 	}
 	
 
-	public Hotissue getByName(String name) {
+	public Hotissue findByName(String name) {
 		
 		return this.jdbcTemplate.queryForObject(
 					"SELECT * FROM hotissues WHERE name = ?",
@@ -162,26 +149,6 @@ public class HotissueDao {
 				);
 				
 				
-	}
-
-	public int delete(int hotissueId) {
-		
-		return this.jdbcTemplate.update(
-					"DELETE FROM hotissues WHERE id = ?",
-					new Object[] {hotissueId}
-				);
-		
-		
-	}
-
-	public List<Hotissue> getLatestHotissues(int count) {
-		
-		return this.jdbcTemplate.query(
-					"SELECT * FROM hotissues ORDER BY timestamp DESC LIMIT ?",
-					new Object[] {count},
-					hotissueMapper
-				);
-		
 	}
 
 	public int[] addHotissues(final List<Hotissue> hotissues) {
@@ -218,22 +185,6 @@ public class HotissueDao {
 				);
 	}
 
-	public List<Hotissue> getWithArticlesByOrderedScore(int size) {
-		
-		return this.jdbcTemplate.query(
-				"SELECT * FROM " 
-					+ "(SELECT * FROM hotissues ORDER BY score DESC LIMIT ?) AS hotissues "
-				+ "INNER JOIN "
-					+ "(SELECT " 
-						+ "id, title, date, content, timestamp, journals_id, hotissues_id, minor_sections_id, "
-						+ "hits, completed_reading_count, MAX(score) AS score "
-					+ "FROM articles GROUP BY hotissues_id ORDER BY score DESC) AS articles "
-				+ "ON hotissues.id = articles.hotissues_id ORDER BY hotissues.score DESC",
-				new Object[]{size},
-				this.hotissueWithArticleMapper
-			);
-	}
-
 	public int[] updateScores(final List<Hotissue> hotissues) {
 		
 		return this.jdbcTemplate.batchUpdate(
@@ -257,35 +208,20 @@ public class HotissueDao {
 			);
 	}
 
-	public List<Hotissue> getBetweenServiceDates(String from, String to) {
+
+	public List<Hotissue> findBetweenDatesAtHalfDay(String[] dates) {
 		
 		return this.jdbcTemplate.query(
-					"SELECT half_day.sequence AS sequence, hotissues.id, hotissues.name, hotissues.timestamp, hotissues.score FROM "
-						+ "(SELECT articles.hotissues_id AS hotissues_id, half_day.sequence AS sequence FROM "
-							+ "(SELECT * FROM half_day WHERE timestamp BETWEEN ? AND ?) AS half_day "
-						+ "INNER JOIN articles "
-						+ "ON half_day.articles_id = articles.id "
-						+ "ORDER BY half_day.sequence) AS half_day "
-					+ "INNER JOIN hotissues "
-					+ "ON half_day.hotissues_id = hotissues.id",
-					new Object[] {from, to},
-					new RowMapper<Hotissue>() {
-
-						@Override
-						public Hotissue mapRow(ResultSet rs, int rowNum) throws SQLException {
-							Hotissue hotissue = new Hotissue();
-							hotissue.setId(rs.getInt("id"));
-							hotissue.setName(rs.getString("name"));
-							hotissue.setTimestamp(rs.getString("timestamp"));
-							hotissue.setScore(rs.getDouble("score"));
-							hotissue.setSequence(rs.getInt("sequence"));
-							
-							return hotissue;
-							
-						}
-							
-					}
-				);
-		
+			"SELECT half_day.sequence AS sequence, hotissues.id, hotissues.name, hotissues.timestamp, hotissues.score FROM "
+				+ "(SELECT articles.hotissues_id AS hotissues_id, half_day.sequence AS sequence FROM "
+					+ "(SELECT * FROM half_day WHERE timestamp BETWEEN ? AND ?) AS half_day "
+				+ "INNER JOIN articles "
+				+ "ON half_day.articles_id = articles.id "
+				+ "ORDER BY half_day.sequence) AS half_day "
+			+ "INNER JOIN hotissues "
+			+ "ON half_day.hotissues_id = hotissues.id",
+			new Object[] {dates[0], dates[1]},
+			this.hotissueMapperAtHalfDay
+		);
 	}
 }

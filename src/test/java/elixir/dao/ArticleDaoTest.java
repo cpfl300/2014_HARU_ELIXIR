@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,173 +61,160 @@ public class ArticleDaoTest {
 	@Before
 	public void setup() {
 		// fixture
-		makeJournalFixtures();
-		makeSectionFixtures();
-		makeHotissueFixtures();
-		makeArticleFixtures();
-		
+		makeFixtures();		
 	}
 	
 	// read	
 	@Test
 	public void getCount() {
-		articleDao.deleteAll();
-		assertThat(articleDao.getCount(), is(0));
+		initDao();
+		
+		// getCount
+		articleDao.add(article1);
+		assertThat(articleDao.getCount(), is(1));
+		
+		articleDao.add(article2);
+		assertThat(articleDao.getCount(), is(2));
+		
+		articleDao.add(article3);
+		assertThat(articleDao.getCount(), is(3));
 	}
 	
 	// delete
 	@Test
 	public void deleteById() {
-		prepareHotissues();
-		prepareArticleDao();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
+		initDao();
+		prepareArticleDao(new Article[]{article1, article2, article3});
 		assertThat(articleDao.getCount(), is(3));
 		
-		assertThat(articleDao.deleteById(1), is(1));
+		// delete
+		assertThat(articleDao.deleteById(article1.getId()), is(1));
 		assertThat(articleDao.getCount(), is(2));
 		
-		assertThat(articleDao.deleteById(2), is(1));
+		assertThat(articleDao.deleteById(article2.getId()), is(1));
 		assertThat(articleDao.getCount(), is(1));
 		
-		assertThat(articleDao.deleteById(3), is(1));
+		assertThat(articleDao.deleteById(article3.getId()), is(1));
 		assertThat(articleDao.getCount(), is(0));
 	}
 	
 	@Test
 	public void deleteAll() {
-		prepareHotissues();
-		prepareArticleDao();
+		initDao();
+		prepareArticleDao(new Article[]{article1, article2, article3});
+		assertThat(articleDao.getCount(), is(3));
 		
-		assertThat(articleDao.deleteAll(), is(0));
-		assertThat(articleDao.getCount(), is(0));
-		
-		articleDao.addArticle(article1);
-		assertThat(articleDao.deleteAll(), is(1));
-		assertThat(articleDao.getCount(), is(0));
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		assertThat(articleDao.deleteAll(), is(2));
-		assertThat(articleDao.getCount(), is(0));
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
+		// deleteAll
 		assertThat(articleDao.deleteAll(), is(3));
 		assertThat(articleDao.getCount(), is(0));
-	
 	}
+	
 	
 	// create article
 	@Test
-	public void addArticle() {
-		prepareHotissues();
-		prepareArticleDao();
+	public void add() {
+		initDao();
 		
-		articleDao.addArticle(article1);
+		// add
+		articleDao.add(article1);
 		assertThat(articleDao.getCount(), is(1));
 		
-		articleDao.addArticle(article2);
+		articleDao.add(article2);
 		assertThat(articleDao.getCount(), is(2));
 		
-		articleDao.addArticle(article3);
+		articleDao.add(article3);
 		assertThat(articleDao.getCount(), is(3));
 	}
 	
 	@Test(expected=DuplicateKeyException.class)
-	public void addArticle_DuplicationKeyException() {
-		prepareHotissues();
-		prepareArticleDao();
+	public void add_duplicationKeyException() {
+		initDao();
 		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article1);
+		articleDao.add(article1);
+		
+		// add - except
+		articleDao.add(article1);
+		
 		assertThat(articleDao.getCount(), is(2));
 	}
 	
 	// create articles
 	@Test
 	public void addArticles() {
-		prepareHotissues();
-		prepareArticleDao();
+		initDao();
 		
-		articles = new ArrayList<Article>();
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
+		articles = Arrays.asList(new Article[]{article1, article2, article3});
 		
+		// add
 		int[] actualCounts = articleDao.addArticles(articles);
+		
 		assertThat(actualCounts.length, is(3));
 	}
 	
 	@Test
-	public void addArticlesIncludedDuplicateKey() {
-		prepareHotissues();
-		prepareArticleDao();
+	public void addArticles_includedDuplicateKey() {
+		initDao();
 		
-		articles = new ArrayList<Article>();
-		articles.add(article1);
-		articles.add(article1);
-		articles.add(article1);
+		articles = Arrays.asList(new Article[]{article1, article1, article1});
 		
-		int actualCounts[] = articleDao.addArticles(articles);
-		int actualCount = 0;
-		for (int affectedRow : actualCounts) {
-			actualCount += affectedRow;
-		}
-
-		assertThat(actualCount, is(1));
+		// add - duplicatedSet
+		int updateState[] = articleDao.addArticles(articles);
+		
+		assertThat(getCount(updateState), is(1));
 	}
 	
 	// read by id
 	@Test
-	public void addAndFind() {
-		prepareHotissues();
-		prepareArticleDao();
+	public void addAndFindById() {
+		initDao();
 		
-		articleDao.addArticle(this.article1);
+		// add
+		articleDao.add(article1);
+		
+		// find
 		Article actualArticle1 = articleDao.findById(1);
-		assertSameArticle(actualArticle1, this.article1);
 		
-		articleDao.addArticle(this.article2);
+		// assert
+		assertSameArticle(actualArticle1, article1);
+		
+		articleDao.add(article2);
 		Article actualArticle2 = articleDao.findById(2);
-		assertSameArticle(actualArticle2, this.article2);
+		assertSameArticle(actualArticle2, article2);
 		
-		articleDao.addArticle(this.article3);
+		articleDao.add(article3);
 		Article actualArticle3 = articleDao.findById(3);
-		assertSameArticle(actualArticle3, this.article3);
+		assertSameArticle(actualArticle3, article3);
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)
-	public void notFound() {
-		prepareHotissues();
-		prepareArticleDao();
+	public void findById_emptyResultDataAccessException() {
+		initDao();
 		
-		articleDao.addArticle(this.article1);
+		// add
+		articleDao.add(article1);
+		
+		// find - except
 		Article actualArticle1 = articleDao.findById(4);
-		assertSameArticle(actualArticle1, this.article1);
+		
+		assertSameArticle(actualArticle1, article1);
 		
 	}
 	
 	// read by date
 	@Test
 	public void findBetweenDates() throws ParseException {
-		prepareHotissues();
-		prepareArticleDao();
+		initDao();
 		
+		// prepare
 		article1.setDate("2014-12-07 05:59:59");
 		article2.setDate("2014-12-07 06:00:00");
 		article3.setDate("2014-12-07 17:59:59");
 		article4.setDate("2014-12-07 18:00:00");
+		prepareArticleDao(new Article[]{article1, article2, article3, article4});
 		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		articleDao.addArticle(article4);
-
 	    String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.DECEMBER , 7, 18);
+	    
+	    // find
 		List<Article> actualArticles = articleDao.findBetweenDates(dates);
 		
 		assertThat(actualArticles.size(), is(2));
@@ -238,24 +225,19 @@ public class ArticleDaoTest {
 	// read by ordered score
 	@Test
 	public void findByScoreOrderFromOneTo() {
-		prepareHotissues();
-		prepareArticleDao();
+		initDao();
 		
+		// prepare
 		article1.setScore(10.1);
 		article2.setScore(20.1);
 		article3.setScore(30.1);
+		prepareArticleDao(new Article[]{article1, article2, article3});
 		
-		List<Article> articles = new ArrayList<Article>();
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
-		
-		int[] updateStatus = articleDao.addArticles(articles);
-		assertThat(getCount(updateStatus), is(3));
-		
+		// find
 		final int size = 2;
 		List<Article> actualArticles = articleDao.findByScoreOrderFromOneTo(size);
 		
+		// assert
 		assertThat(actualArticles.size(), is(size));
 		assertThat(actualArticles.get(0).getScore(), is(30.1));
 		assertThat(actualArticles.get(1).getScore(), is(20.1));
@@ -266,18 +248,13 @@ public class ArticleDaoTest {
 	// udpate score
 	@Test
 	public void updateScores() {
-		prepareHotissues();
-		prepareArticleDao();
+		initDao();
 		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
+		// prepare
+		prepareArticleDao(new Article[]{article1, article2, article3});
+		List<Article> updatedArticles = Arrays.asList(new Article[]{new Article(article1.getId(), 11.1), new Article(article2.getId(), 22.2), new Article(article3.getId(), 33.3)});
 		
-		List<Article> updatedArticles = new ArrayList<Article>();
-		updatedArticles.add(new Article(article1.getId(), 11.1));
-		updatedArticles.add(new Article(article2.getId(), 22.2));
-		updatedArticles.add(new Article(article3.getId(), 33.3));
-		
+		// update
 		int[] state = articleDao.updateScores(updatedArticles);
 		
 		assertThat(getCount(state), is(3));
@@ -300,76 +277,59 @@ public class ArticleDaoTest {
 	// delete at half day
 	@Test
 	public void deleteAllAtHalfDay() {
+		
+		// delete
 		articleDao.deleteAllAtHalfDay();
+		
 		assertThat(articleDao.getCountAtHalfDay(), is(0));
 	}
 	
 	// add article at half day
 	@Test
 	public void addArticleAtHalfDay() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		
-		// date
+		prepareArticleDao(new Article[]{article1, article2, article3});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
 		
 		// add
-		articleDao.addArticleAtHalfDay(new Article(article1.getId(), 1, date));
+		articleDao.addAtHalfDay(new Article(article1.getId(), 1, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(1));
 		
-		articleDao.addArticleAtHalfDay(new Article(article2.getId(), 2, date));
+		articleDao.addAtHalfDay(new Article(article2.getId(), 2, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(2));
 		
-		articleDao.addArticleAtHalfDay(new Article(article3.getId(), 2, date));
+		articleDao.addAtHalfDay(new Article(article3.getId(), 2, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(3));
 	}
 	
 	@Test(expected=DataIntegrityViolationException.class)
-	public void addArticleAtHalfDay_NonexistForeignKey() {
+	public void addAtHalfDay_dataIntegrityViolationException() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		
-		// date
+		prepareArticleDao(new Article[]{article1});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
 		
 		// add
-		articleDao.addArticleAtHalfDay(new Article(article1.getId(), 1, date));
+		articleDao.addAtHalfDay(new Article(article1.getId(), 1, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(1));
 		
 		// add - except
-		articleDao.addArticleAtHalfDay(new Article(article2.getId(), 2, date));
+		articleDao.addAtHalfDay(new Article(article2.getId(), 2, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(2));
 	}
 	
 	// add articles at half day
 	@Test
 	public void addArticlesAtHalfDay() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		
-		// date
+		prepareArticleDao(new Article[]{article1, article2, article3});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
-		
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, date));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, date));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, date));
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{new Article(article1.getId(), 1, date), new Article(article2.getId(), 2, date), new Article(article3.getId(), 3, date)}); 
 		
 		// add
 		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
@@ -377,23 +337,15 @@ public class ArticleDaoTest {
 	}
 	
 	@Test(expected=DataIntegrityViolationException.class)
-	public void addArticlesAtHalfDay_NonexistForeignKey() {
+	public void addArticlesAtHalfDay_dataIntegrityViolationException() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		
-		// date
+		prepareArticleDao(new Article[]{article1});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{new Article(article1.getId(), 1, date), new Article(article2.getId(), 2, date), new Article(article3.getId(), 3, date)});
 		
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, date));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, date));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, date));
-		
-		// add
+		// add - except
 		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
 		assertThat(getCount(updateState), is(1));
 	}
@@ -402,22 +354,16 @@ public class ArticleDaoTest {
 	// read
 	@Test
 	public void addAndfindByIdAtHalfDay() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		
-		// date
+		prepareArticleDao(new Article[]{article1, article2, article3});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
 		
-		// input
-		int id1 = articleDao.addArticleAtHalfDay(new Article(article1.getId(), 1, date));
-		int id2 = articleDao.addArticleAtHalfDay(new Article(article2.getId(), 2, date));
-		int id3 = articleDao.addArticleAtHalfDay(new Article(article3.getId(), 3, date));
+		// add
+		int id1 = articleDao.addAtHalfDay(new Article(article1.getId(), 1, date));
+		int id2 = articleDao.addAtHalfDay(new Article(article2.getId(), 2, date));
+		int id3 = articleDao.addAtHalfDay(new Article(article3.getId(), 3, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(3));
 		
 		// find
@@ -432,105 +378,36 @@ public class ArticleDaoTest {
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)
-	public void addAndfindByIdAtHalfDay_EmptyResultDataAccessException() {
+	public void addAndfindByIdAtHalfDay_emptyResultDataAccessException() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		
-		// date
+		prepareArticleDao(new Article[]{article1});
 		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
 		
-		// input
-		articleDao.addArticleAtHalfDay(new Article(article1.getId(), 1, date));
+		// add
+		articleDao.addAtHalfDay(new Article(article1.getId(), 1, date));
 		assertThat(articleDao.getCountAtHalfDay(), is(1));
 		
 		// find - except
 		Article actual1 = articleDao.findByIdAtHalfDay(0);
 		assertSameArticle(actual1, article1, 1);
 	}
-	
-	
-	@Test
-	public void findByArticleIdAtHalfDay() {
-		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		
-		// date
-		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
-		
-		// input
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, date));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, date));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, date));
-		
-		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
-		assertThat(getCount(updateState), is(3));
-		
-		// find
-		Article actual1 = articleDao.findByArticleIdAtHalfDay(articlesForHalfDay.get(0).getId());
-		assertSameArticle(actual1, article1, 1);
-		
-		Article actual2 = articleDao.findByArticleIdAtHalfDay(articlesForHalfDay.get(1).getId());
-		assertSameArticle(actual2, article2, 2);
-		
-		Article actual3 = articleDao.findByArticleIdAtHalfDay(articlesForHalfDay.get(2).getId());
-		assertSameArticle(actual3, article3, 3);
-	}
-	
-	@Test(expected=EmptyResultDataAccessException.class)
-	public void findByArticleIdAtHalfDay_EmptyResultDataAccessException() {
-		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		
-		// date
-		String date = ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 6);
-		
-		// input
-		articleDao.addArticleAtHalfDay(new Article(article1.getId(), 1, date));
-		assertThat(articleDao.getCountAtHalfDay(), is(1));
-		
-		// find - except
-		Article actual1 = articleDao.findByArticleIdAtHalfDay(0);
-		assertSameArticle(actual1, article1, 1);
-	}
-	
-
 
 	@Test
 	public void findBetweenDatesAtHalfDay() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		articleDao.addArticle(article4);
-		
-		// service dates
+		prepareArticleDao(new Article[]{article1, article2, article3, article4});
 		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 28, 6);
-		
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 27, 17)));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, dates[0]));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, dates[1]));
-		articlesForHalfDay.add(new Article(article4.getId(), 4, ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 18)));
-		
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{
+				new Article(article1.getId(), 1, ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 27, 17)),
+				new Article(article2.getId(), 2, dates[0]),
+				new Article(article3.getId(), 3, dates[1]),
+				new Article(article4.getId(), 4, ElixirUtils.getFormattedDate(2014, Calendar.NOVEMBER, 28, 18))
+		});
+				
 		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
 		assertThat(getCount(updateState), is(4));
 		
@@ -543,28 +420,24 @@ public class ArticleDaoTest {
 	
 	
 	@Test
-	public void notFoundBetweenDatesAtHalfDay() {
-		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
+	public void not_findBetweenDatesAtHalfDay() {
+		initDao();
 		
-		articleDao.addArticle(article1);
-		articleDao.addArticle(article2);
-		articleDao.addArticle(article3);
-		articleDao.addArticle(article4);
+		// prepare
+		prepareArticleDao(new Article[]{article1, article2, article3, article4});
 		
 		// service dates
 		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 28, 6);
 		String[] fakeDates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 30, 6);
 		
-		// input
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, dates[0]));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, dates[0]));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, dates[1]));
-		articlesForHalfDay.add(new Article(article4.getId(), 4, dates[1]));
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{
+					new Article(article1.getId(), 1, dates[0]),
+					new Article(article2.getId(), 2, dates[0]),
+					new Article(article3.getId(), 3, dates[1]),
+					new Article(article4.getId(), 4, dates[1])
+				});
 		
+		// add
 		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
 		assertThat(getCount(updateState), is(4));
 		
@@ -576,31 +449,23 @@ public class ArticleDaoTest {
 	
 	@Test
 	public void findBySequenceBetweenDatesAtHalfDay() {
+		initDao();
+		
+		Article[] articleArr = new Article[]{article1, article2, article3, article4};
+		articles = Arrays.asList(articleArr);
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		List<Article> articles = new ArrayList<Article>();
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
-		articles.add(article4);
-		
-		int[] updateState = articleDao.addArticles(articles);
-		assertThat(getCount(updateState), is(4));
-		
-		// service dates
+		prepareArticleDao(articleArr);
 		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 28, 6);
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{
+				new Article(article1.getId(), 1, dates[0]),
+				new Article(article2.getId(), 2, dates[0]),
+				new Article(article3.getId(), 3, dates[1]),
+				new Article(article4.getId(), 4, dates[1])
+		});
 		
-		// input
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, dates[0]));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, dates[0]));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, dates[1]));
-		articlesForHalfDay.add(new Article(article4.getId(), 4, dates[1]));
-		
-		updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
+		// add
+		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
 		assertThat(getCount(updateState), is(4));
 		
 		// find
@@ -612,32 +477,21 @@ public class ArticleDaoTest {
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)
-	public void findBySequenceBetweenDatesAtHalfDay_EmptyResultDataAccessException() {
+	public void findBySequenceBetweenDatesAtHalfDay_emptyResultDataAccessException() {
+		initDao();
+		
 		// prepare
-		prepareHotissues();
-		prepareArticleDao();
-		prepareArticleDaoAtHalfDay();
-		
-		List<Article> articles = new ArrayList<Article>();
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
-		articles.add(article4);
-		
-		int[] updateState = articleDao.addArticles(articles);
-		assertThat(getCount(updateState), is(4));
-		
-		// service dates
+		prepareArticleDao(new Article[]{article1, article2, article3, article4});
 		String[] dates = ElixirUtils.getServiceDatesByTime(2014, Calendar.NOVEMBER, 28, 6);
+		List<Article> articlesForHalfDay = Arrays.asList(new Article[]{
+				new Article(article1.getId(), 1, dates[0]),
+				new Article(article2.getId(), 2, dates[0]),
+				new Article(article3.getId(), 3, dates[1]),
+				new Article(article4.getId(), 4, dates[1])
+		});
 		
-		// input
-		List<Article> articlesForHalfDay = new ArrayList<Article>();
-		articlesForHalfDay.add(new Article(article1.getId(), 1, dates[0]));
-		articlesForHalfDay.add(new Article(article2.getId(), 2, dates[0]));
-		articlesForHalfDay.add(new Article(article3.getId(), 3, dates[1]));
-		articlesForHalfDay.add(new Article(article4.getId(), 4, dates[1]));
-		
-		updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
+		// add
+		int[] updateState = articleDao.addArticlesAtHalfDay(articlesForHalfDay);
 		assertThat(getCount(updateState), is(4));
 		
 		// find - except
@@ -683,47 +537,41 @@ public class ArticleDaoTest {
 		
 		return size;
 	}
-
-	private void prepareHotissues() {
-		hotissueDao.add(hotissue1);
-		hotissueDao.add(hotissue2);
-		hotissueDao.add(hotissue3);
-	}
 	
-	private void prepareArticleDao() {
+	private void initDao() {
 		articleDao.deleteAll();
 		assertThat(articleDao.getCount(), is(0));
-	}
-	
-	private void prepareArticleDaoAtHalfDay() {
+		
+		hotissueDao.deleteAll();
+		assertThat(hotissueDao.getCount(), is(0));
+		
 		articleDao.deleteAllAtHalfDay();
 		assertThat(articleDao.getCountAtHalfDay(), is(0));
-	}
-
-	private void makeSectionFixtures() {
-		section1 = new Section(3);
-		section2 = new Section(10);
-		section3 = new Section(23);		
-	}
-
-
-	private void makeJournalFixtures() {
-		journal1 = new Journal(84);
-		journal2 = new Journal(10);
-		journal3 = new Journal(23);		
+		
+		
+		hotissueDao.addHotissues(Arrays.asList(new Hotissue[]{hotissue1, hotissue2, hotissue3}));
 	}
 	
-	private void makeHotissueFixtures() {
+	private void prepareArticleDao(Article[] articles) {
+		articleDao.addArticles(Arrays.asList(articles));
+	}
+	
+	private void makeFixtures() {
+		section1 = new Section(3);
+		section2 = new Section(10);
+		section3 = new Section(23);
+		
+		journal1 = new Journal(84);
+		journal2 = new Journal(10);
+		journal3 = new Journal(23);
+		
 		hotissue1 = new Hotissue(1, "hotissue1");
 		hotissue2 = new Hotissue(2, "hotissue2");
 		hotissue3 = new Hotissue(3, "hotissue3");
-	}
-	
-	private void makeArticleFixtures() {
+		
 		article1 = new Article(1, hotissue1, journal1, section1, "title1", "1111-01-01 01:11:11", "content1", 10000, 7000);
 		article2 = new Article(2, hotissue2, journal2, section2, "title2", "1222-02-02 02:11:11", "content2", 20000, 8000);
 		article3 = new Article(3, hotissue3, journal3, section3, "title3", "1333-03-03 03:11:11", "content3", 30000, 9000);
 		article4 = new Article(4, hotissue3, journal3, section3, "title4", "1444-04-04 04:11:11", "content4", 40000, 10000);
 	}
-
 }

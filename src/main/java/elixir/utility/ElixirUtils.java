@@ -7,12 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ElixirUtils {
-	private static final Logger log = LoggerFactory.getLogger(ElixirUtils.class);
-	
 	static final int FIANL_SERVICE_TIME_OFFSET = -1;
 	static final int HALF_A_DAY_TIME = 12;
 	static final int MORNING_SERVICE_TIME = 6;
@@ -74,7 +69,6 @@ public class ElixirUtils {
 		calendar.set(Calendar.MILLISECOND, 0);
 		
 		int hour = calendar.get(Calendar.HOUR);
-		log.debug("hour: " + hour);
 		
 		int offset = 0;
 		if (hour > AFTERNOON_SERVICE_TIME) {

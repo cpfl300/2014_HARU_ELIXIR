@@ -48,7 +48,7 @@ public class ArticleService {
 		article.setId(id);
 		
 		try {			
-			articleDao.addArticle(article);
+			articleDao.add(article);
 		} catch (DuplicateKeyException e) {
 			// do-nothing
 		}
@@ -139,6 +139,56 @@ public class ArticleService {
 
 	
 
+	
+	public List<Article> getByOrderedScore(int size) {
+		
+		return articleDao.findByScoreOrderFromOneTo(size);
+	}
+
+	public List<Article> getArticlesBetweenDates(String from, String to) {
+		
+		return articleDao.findBetweenDates(new String[] {from, to});
+	}
+	
+	///////////
+	
+	
+	public List<Article> getHalfDay() {
+		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
+		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
+		
+		List<Article> articles = articleDao.findBetweenDatesAtHalfDay(dates);
+		
+		setJournalAndSectionAtArticles(articles);
+		
+		return articles;
+	}
+	
+
+	public Article getHalfDayBySequence(int sequence) {
+		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
+		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
+		
+		Article article = articleDao.findBySequenceBetweenDatesAtHalfDay(dates, sequence);
+		setJournalAndSection(article);
+		
+		return article;
+	}
+
+
+
+	
+	//////////
+	
+	private void setJournalAndSectionAtArticles(List<Article> articles) {
+		
+		for (Article a : articles) {
+			setJournalAndSection(a);
+		}
+		
+	}
+	
+	
 	private void setJournalAndSection(Article article) {
 		Journal journal = article.getJournal();
 		Section section = article.getSection();
@@ -171,17 +221,6 @@ public class ArticleService {
 		
 		return count;
 	}
-
-	public List<Article> getByOrderedScore(int size) {
-		
-		return articleDao.findByScoreOrderFromOneTo(size);
-	}
-
-	public List<Article> getArticlesBetweenDates(String from, String to) {
-		
-		return articleDao.findBetweenDates(new String[] {from, to});
-	}
-
 
 
 

@@ -51,6 +51,16 @@ public class Article {
 		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
 	}
 	
+	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+			int completedReadingCount) {
+		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+	}
+	
+	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+			int completedReadingCount, double score) {
+		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
+	}
+	
 	// standard
 	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
 			int completedReadingCount, double score) {
@@ -66,30 +76,10 @@ public class Article {
 		this.score = score;
 	}
 	
-
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount, double score) {
-//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
-//		
-//	}
-
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount) {
-//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
-//	}
-//	
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
-//		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
-//	}
-//	
-//	
-//	
-//	
-//
-//
+	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
+		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
+	}
 	
-//
-//
 
 	public int getId() {
 		return id;
