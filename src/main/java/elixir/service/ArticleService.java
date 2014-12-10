@@ -91,16 +91,16 @@ public class ArticleService {
 		
 	}
 
-	@Transactional
-	public int delete(int id) {
-		Hotissue hotissue = articleDao.findById(id).getHotissue();
-		
-		int affectedRow = articleDao.deleteById(id);
-		hotissueService.delete(hotissue.getId());
-		
-		return affectedRow;
-
-	}
+//	@Transactional
+//	public int delete(int id) {
+//		Hotissue hotissue = articleDao.findById(id).getHotissue();
+//		
+//		int affectedRow = articleDao.deleteById(id);
+//		hotissueService.delete(hotissue.getId());
+//		
+//		return affectedRow;
+//
+//	}
 	
 	@Transactional
 	public int calcScore(String from, String to) {		

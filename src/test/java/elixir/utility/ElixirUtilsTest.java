@@ -26,6 +26,36 @@ public class ElixirUtilsTest {
 	}
 	
 	@Test
+	public void parseAndFormt() {
+		String format1 = "yyMMdd";
+		String format2 = "yyyyMMdd";
+		String format3 = "yyyy-MM-dd";
+		String format4 = "yyyy.MM.dd HH:mm:ss";
+		
+		String formattedDate1 = "881207";
+		String formattedDate2 = "19881207";
+		String formattedDate3 = "1988-12-07";
+		String formattedDate4 = "1988.12.07 18:30:00";
+		
+		Date date1 = ElixirUtils.parse(format1, formattedDate1);
+		Date date2 = ElixirUtils.parse(format2, formattedDate2);
+		Date date3 = ElixirUtils.parse(format3, formattedDate3);
+		Date date4 = ElixirUtils.parse(format4, formattedDate4);
+		
+		assertThat(formattedDate1, is(ElixirUtils.format(format1, date1)));
+		assertThat(formattedDate2, is(ElixirUtils.format(format2, date2)));
+		assertThat(formattedDate3, is(ElixirUtils.format(format3, date3)));
+		assertThat(formattedDate4, is(ElixirUtils.format(format4, date4)));
+		
+	}
+	
+	@Test
+	public void format() {
+		
+		
+	}
+	
+	@Test
 	public void getDate() {
 		Date actualDate1 = ElixirUtils.getDate(2014, Calendar.DECEMBER, 7, 6);
 		Date actualDate2 = ElixirUtils.getDate(2014, Calendar.DECEMBER, 7, 18);

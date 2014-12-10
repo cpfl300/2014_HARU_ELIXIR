@@ -35,7 +35,7 @@ public class ElixirConfig {
 	
 	@Bean
 	public JdbcTemplate jdbcTemplate() {
-		
+
 		return new JdbcTemplate(dataSource());
 	}
 	

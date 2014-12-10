@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import elixir.dao.HotissueDao;
 import elixir.model.Article;
 import elixir.model.Hotissue;
+import elixir.service.ArticleService;
 import elixir.utility.ElixirUtils;
 
 @Service
@@ -85,19 +86,19 @@ public class HotissueService {
 	
 
 
-	@Transactional
-	public int delete(int id) {
-			
-		try {		
-			
-			return hotissueDao.delete(id);
-			
-		} catch (DataIntegrityViolationException e) {
-			// do-nothing
-			return 0;
-		}
-
-	}
+//	@Transactional
+//	public int delete(int id) {
+//			
+//		try {		
+//			
+//			return hotissueDao.delete(id);
+//			
+//		} catch (DataIntegrityViolationException e) {
+//			// do-nothing
+//			return 0;
+//		}
+//
+//	}
 	
 	
 	@Transactional
@@ -113,17 +114,17 @@ public class HotissueService {
 		return getCount(hotissueDao.updateScores(hotissues));
 	}
 	
-	public List<Hotissue> getByServiceDate(Date date) {
-		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
-			
-		return this.hotissueDao.getBetweenServiceDates(dates[0], dates[1]);
-	}
-	
-
-	public List<Hotissue> getWithArticlesByOrderedScore(int size) {
-		
-		return this.hotissueDao.getWithArticlesByOrderedScore(size);
-	}
+//	public List<Hotissue> getByServiceDate(Date date) {
+//		String[] dates = ElixirUtils.getServiceFormattedDatesByDate(date);
+//			
+//		return this.hotissueDao.getBetweenServiceDates(dates[0], dates[1]);
+//	}
+//	
+//
+//	public List<Hotissue> getWithArticlesByOrderedScore(int size) {
+//		
+//		return this.hotissueDao.getWithArticlesByOrderedScore(size);
+//	}
 	
 	
 	private int getCount(int[] rows) {

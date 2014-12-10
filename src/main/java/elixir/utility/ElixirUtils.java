@@ -125,6 +125,26 @@ public class ElixirUtils {
 	}
 
 
+	public static Date parse(String format, String formattedDate) {
+		SimpleDateFormat dateformat = new SimpleDateFormat(format);
+		Date date = null;
+		try {
+			date = dateformat.parse(formattedDate);
+		} catch (ParseException e) {
+			// do nothing
+		}
+		
+		return date;
+	}
+
+
+	public static String format(String format, Date date) {
+		SimpleDateFormat dateformat = new SimpleDateFormat(format);
+		
+		return dateformat.format(date);
+	}
+
+
 
 	
 }
