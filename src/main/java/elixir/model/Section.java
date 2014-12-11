@@ -6,26 +6,26 @@ public class Section {
 	private String major;
 	private String minor;
 	
-	public Section() {
-	}
-	
-	public Section(String minor) {
-		this(0, null, minor);
-	}
-
-	public Section(int id) {
-		this(id, null, null);
-	}
-	
-	public Section(String major, String minor) {
-		this(0, major, minor);
-	}
-	
-	public Section (int id, String major, String minor) {
-		this.id = id;
-		this.major = major;
-		this.minor = minor;
-	}
+//	public Section() {
+//	}
+//	
+//	public Section(String minor) {
+//		this(0, null, minor);
+//	}
+//
+//	public Section(int id) {
+//		this(id, null, null);
+//	}
+//	
+//	public Section(String major, String minor) {
+//		this(0, major, minor);
+//	}
+//	
+//	public Section (int id, String major, String minor) {
+//		this.id = id;
+//		this.major = major;
+//		this.minor = minor;
+//	}
 
 
 	public int getId() {

@@ -6,14 +6,19 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import elixir.utility.ElixirUtils;
 
 public class ArticleTest {
+	private static final Logger log = LoggerFactory.getLogger(ArticleTest.class);
+	
 	private static final String FACK_STR = "-----";
 	
 	private List<Article> articles;
@@ -54,32 +59,32 @@ public class ArticleTest {
 	}
 
 	
-	@Test
-	public void hashcode() {
-		Article actual1 = new Article(
-				new Hotissue(hotissue1.getName()),
-				new Journal(journal1.getName()),
-				new Section(section1.getMinor()),
-				article1.getTitle(),
-				article1.getDate());
-		assertThat(actual1.hashCode(), is(article1.hashCode()));
-		
-		Article actual2 = new Article(
-				new Hotissue(hotissue2.getName()),
-				new Journal(journal2.getName()),
-				new Section(section2.getMinor()),
-				article2.getTitle(),
-				article2.getDate());
-		assertThat(actual2.hashCode(), is(article2.hashCode()));
-		
-		Article actual3 = new Article(
-				new Hotissue(hotissue3.getName()), 
-				new Journal(journal3.getName()), 
-				new Section(section3.getMinor()), 
-				article3.getTitle(), 
-				article3.getDate());
-		assertThat(actual3.hashCode(), is(article3.hashCode()));
-	}
+//	@Test
+//	public void hashcode() {
+//		Article actual1 = new Article(
+//				new Hotissue(hotissue1.getName()),
+//				new Journal(journal1.getName()),
+//				new Section(section1.getMinor()),
+//				article1.getTitle(),
+//				article1.getDate());
+//		assertThat(actual1.hashCode(), is(article1.hashCode()));
+//		
+//		Article actual2 = new Article(
+//				new Hotissue(hotissue2.getName()),
+//				new Journal(journal2.getName()),
+//				new Section(section2.getMinor()),
+//				article2.getTitle(),
+//				article2.getDate());
+//		assertThat(actual2.hashCode(), is(article2.hashCode()));
+//		
+//		Article actual3 = new Article(
+//				new Hotissue(hotissue3.getName()), 
+//				new Journal(journal3.getName()), 
+//				new Section(section3.getMinor()), 
+//				article3.getTitle(), 
+//				article3.getDate());
+//		assertThat(actual3.hashCode(), is(article3.hashCode()));
+//	}
 	
 	@Test
 	public void notHashcode() {
@@ -207,5 +212,31 @@ public class ArticleTest {
 		articles.add(article3);
 	}
 
+	public static void ASSERT(Article actual, Article expected) {
+		assertThat(actual.getId(), is(expected.getId()));
+		//assertThat(actual.getHotissue().getId(), is(expected.getHotissue().getId()));
+		assertThat(actual.getJournal().getId(), is(expected.getJournal().getId()));
+		assertThat(actual.getTitle(), is(expected.getTitle()));
+		assertThat(actual.getSection().getId(), is(expected.getSection().getId()));
+		assertThat(actual.getDate(), is(expected.getDate()));
+		//assertThat(ElixirUtils.parseFormattedDate(actual.getTimestamp()), is(Date.class));
+		//assertThat(actual.getContent(), is(expected.getContent()));
+		assertThat(actual.getHits(), is(expected.getHits()));
+		assertThat(actual.getCompletedReadingCount(), is(expected.getCompletedReadingCount()));
+		//assertThat(actual.getScore(), is(expected.getScore()));
+	}
+
+	public static void ASSERTS(List<Article> actuals, List<Article> expecteds) {
+		log.debug("actuals: " + actuals);
+		log.debug("expecteds: " + expecteds);
+		
+		assertThat(actuals.size(), is(expecteds.size()));
+		for (int i=0; i<actuals.size(); i++) {
+			Article actual = actuals.get(i);
+			Article expected = expecteds.get(i);
+			
+			ArticleTest.ASSERT(actual, expected);
+		}		
+	}
 
 }

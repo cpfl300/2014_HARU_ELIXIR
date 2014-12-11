@@ -3,83 +3,123 @@ package elixir.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import refinery.model.NaverSection;
+
 
 public class Article {
 	
-	private int id;
-	private Hotissue hotissue;
+//	private int id;
+//	private Hotissue hotissue;
+//	private Journal journal;
+//	private Section section;
+//	private String title;
+//	private String content;
+//	private String date;
+//	private int hits;
+//	private int completedReadingCount;
+//	private double score;
+//	private String timestamp;
+//	private int sequence;
+	
+	private String articleId;
 	private Journal journal;
-	private Section section;
+	private List<Section> sections;
 	private String title;
-	private String content;
-	private String date;
-	private int hits;
-	private int completedReadingCount;
-	private double score;
-	private String timestamp;
-	private int sequence;
+	private String imageUrl;
+	private String serviceDate;
+	private String serviceTime;
+	private int hitCount;
+	private int readCount;
 	
-	public Article() {
+	// From NaverArticleList
+	// "articleId" : "0006718568",
+	// Journal
+	// List<Section>
+	// "title" : "'바뀐 삼성 채용'…대학도 학생도 고심",
+	// "serviceDate" : "20140124",
+	// "serviceTime" : "103000",
+	// "imageUrl" : "http://imgnews.naver.net/image/origin/001/2014/01/24/6718568.jpg",
+	// "reporter" : "정빛나",
+	public Article(
+			String articleId, Journal journal, List<Section> sections,
+			String title, String imageUrl, String serviceDate, String serviceTime,
+			int hitCount, int readCount) {
+		
+			this.articleId = articleId;
+			this.journal = journal;
+			this.sections = sections;
+			this.title = title;
+			this.imageUrl = imageUrl;
+			this.serviceDate = serviceDate;
+			this.serviceTime = serviceTime;
+			this.hitCount = hitCount;
+			this.readCount = readCount;
+	}
+	
+	
+	
+//	public Article() {
+//
+//	}
+//	
+//	// update score
+//	public Article(int id, double score) {
+//		this.id = id;
+//		this.score = score;
+//	}
+//	
+//	
+//	// half_day
+//	public Article(int id, int sequence, String timestamp) {
+//		this.id = id;
+//		this.sequence = sequence;
+//		this.timestamp = timestamp;
+//	}
+//	
+//	// self dependency
+//	// asListWithSequenceIncludeTimestamp
+//	public Article(int id, String timestamp, int sequence) {
+//		this.id = id;
+//		this.timestamp = timestamp;
+//		this.sequence = sequence;
+//	}
+//	
+//	// standard
+//	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount) {
+//		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+//	}
+//	
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount) {
+//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+//	}
+//	
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount, double score) {
+//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
+//	}
+	
+	// standard
+//	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
+//			int completedReadingCount, double score) {
+//		this.id = id;
+//		this.hotissue = hotissue;
+//		this.journal = journal;
+//		this.section = section;
+//		this.title = title;
+//		this.date = date;
+//		this.content = content;
+//		this.hits = hits;
+//		this.completedReadingCount = completedReadingCount;
+//		this.score = score;
+//	}
+//	
+//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
+//		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
+//	}
 
-	}
-	
-	// update score
-	public Article(int id, double score) {
-		this.id = id;
-		this.score = score;
-	}
-	
-	
-	// half_day
-	public Article(int id, int sequence, String timestamp) {
-		this.id = id;
-		this.sequence = sequence;
-		this.timestamp = timestamp;
-	}
-	
-	// self dependency
-	// asListWithSequenceIncludeTimestamp
-	public Article(int id, String timestamp, int sequence) {
-		this.id = id;
-		this.timestamp = timestamp;
-		this.sequence = sequence;
-	}
-	
-	// standard
-	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount) {
-		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
-	}
-	
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount) {
-		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
-	}
-	
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount, double score) {
-		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
-	}
-	
-	// standard
-	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-			int completedReadingCount, double score) {
-		this.id = id;
-		this.hotissue = hotissue;
-		this.journal = journal;
-		this.section = section;
-		this.title = title;
-		this.date = date;
-		this.content = content;
-		this.hits = hits;
-		this.completedReadingCount = completedReadingCount;
-		this.score = score;
-	}
-	
-	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
-		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
-	}
-	
+
 
 	public int getId() {
 		return id;
@@ -185,18 +225,6 @@ public class Article {
 		return dateStr.substring(0, dateStr.lastIndexOf("."));
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((hotissue == null) ? 0 : hotissue.hashCode());
-		result = prime * result + ((journal == null) ? 0 : journal.hashCode());
-		result = prime * result + ((section == null) ? 0 : section.hashCode());
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		return result;
-	}
-	
 	
 	public int getSequence() {
 		return sequence;
@@ -210,52 +238,13 @@ public class Article {
 		this.score = (double) this.completedReadingCount / this.hits;
 		
 	}
+	
+	
 
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Article other = (Article) obj;
-		if (date == null) {
-			if (other.date != null)
-				return false;
-		} else if (!date.equals(other.date))
-			return false;
-		if (hotissue == null) {
-			if (other.hotissue != null)
-				return false;
-		} else if (!hotissue.equals(other.hotissue))
-			return false;
-		if (journal == null) {
-			if (other.journal != null)
-				return false;
-		} else if (!journal.equals(other.journal))
-			return false;
-		if (section == null) {
-			if (other.section != null)
-				return false;
-		} else if (!section.equals(other.section))
-			return false;
-		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Article [id=" + id + ", hotissue=" + hotissue + ", journal=" + journal + ", section=" + section + ", title=" + title + ", content="
-				+ content + ", date=" + date + ", hits=" + hits + ", completedReadingCount=" + completedReadingCount + ", score=" + score
-				+ ", timestamp=" + timestamp + ", order=" + sequence + "]";
-	}
-
+	
+	
+	
 	public static List<Article> asList(List<Hotissue> hotissues) {
 		List<Article> articles = new ArrayList<Article>();
 		

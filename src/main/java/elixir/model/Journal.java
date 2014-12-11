@@ -2,31 +2,41 @@ package elixir.model;
 
 public class Journal {
 	
-	private int id;
-	private String name;
-	private String section;
+//	private int id;
+//	private String name;
+//	private String section;
 	
-	public Journal() {
-	}
-
-	public Journal(String name) {
-		this(0, name, null);
-	}
+	private String officeId;
+	private String officeName;
 	
-	public Journal(int id) {
-		this(id, null, null);
-	}
-
-	public Journal(String name, String section) {
-		this(0, name, section);
-	}
+//	public Journal() {
+//	}
+//
+//	public Journal(String name) {
+//		this(0, name, null);
+//	}
+//	
+//	public Journal(int id) {
+//		this(id, null, null);
+//	}
+//
+//	public Journal(String name, String section) {
+//		this(0, name, section);
+//	}
+//	
+//	public Journal(int id, String name, String section) {
+//		this.id = id;
+//		this.name = name;
+//		this.section = section;
+//	}
 	
-	public Journal(int id, String name, String section) {
-		this.id = id;
-		this.name = name;
-		this.section = section;
+	// From NaverArticleList
+	// "officeId" : "421",
+	// "officeName" : "",
+	public Journal(String officeId, String officeName) {
+		this.officeId = officeId;
+		this.officeName = officeName;
 	}
-	
 
 	public int getId() {
 		return id;
