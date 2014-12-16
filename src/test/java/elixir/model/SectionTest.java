@@ -11,8 +11,10 @@ public class SectionTest {
 	
 	// assert
 	public static void ASSERT(Section actual, Section expected) {
+		assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getSectionId(), is(expected.getSectionId()));
 		assertThat(actual.getSectionName(), is(expected.getSectionName()));
+		assertThat(actual.getSuperId(), is(expected.getSuperId()));
 	}
 	
 	public static void ASSERTS(List<Section> actuals, List<Section> expecteds) {
@@ -26,11 +28,13 @@ public class SectionTest {
 	}
 	
 	// create
-	public static Section create(String sectionId, String sectionName) {
+	public static Section create(int id, String sectionId, String sectionName, int superId) {
 		Section section = new Section();
 		
+		section.setId(id);
 		section.setSectionId(sectionId);
 		section.setSectionName(sectionName);
+		section.setSuperId(superId);
 		
 		return section;
 	}
@@ -38,9 +42,9 @@ public class SectionTest {
 	public static List<Section> preparedList() {
 		
 		return Arrays.asList(new Section[] {
-				SectionTest.create("104", "생활/문화"),
-				SectionTest.create("227", "지역"),
-				SectionTest.create("316", "3단계_16")
+				SectionTest.create(4, "104", "생활/문화", 0),
+				SectionTest.create(34, "227", "지역", 3),
+				SectionTest.create(91, "316", "3단계_16", 40)
 		});
 	}
 

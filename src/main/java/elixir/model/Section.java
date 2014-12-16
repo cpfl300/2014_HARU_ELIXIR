@@ -5,6 +5,7 @@ public class Section {
 	private int id;
 	private String sectionId;
 	private String sectionName;
+	private int superId;
 	
 	// empty
 	public Section() { }
@@ -43,6 +44,14 @@ public class Section {
 
 	public void setSectionName(String sectionName) {
 		this.sectionName = sectionName;
+	}
+
+	public int getSuperId() {
+		return superId;
+	}
+
+	public void setSuperId(int superId) {
+		this.superId = superId;
 	}
 	
 }

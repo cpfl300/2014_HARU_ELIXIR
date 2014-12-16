@@ -32,6 +32,55 @@ public class SectionDaoTest {
 		sections = SectionTest.preparedList();
 	}
 	
+	// add
+	@Test
+	public void add() {
+		Section actual = null;
+		Section expected = SectionTest.create(0, "999", "test", 1);
+				
+		int actualId = sectionDao.add(expected);
+		expected.setId(actualId);
+		
+		// find by id		
+		actual = sectionDao.findById(actualId);
+		SectionTest.ASSERT(actual, expected);
+		
+		// find by sectionId
+		actual = sectionDao.findBySectionId(expected.getSectionId());
+		SectionTest.ASSERT(actual, expected);
+		
+		// find by sectionId
+		actual = sectionDao.findBySectionName(expected.getSectionName());
+		SectionTest.ASSERT(actual, expected);
+
+	}
+	
+	
+	// find by sectionId
+	@Test
+	public void findById() {
+		List<Section> actuals = new ArrayList<Section>();
+		
+		// exec
+		for (Section section : sections) {
+			Section actual = sectionDao.findById(section.getId());
+			actuals.add(actual);
+		}
+		
+		// assert
+		SectionTest.ASSERTS(actuals, sections);
+	}
+
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findById_emptyResultDataAccess() {
+		List<Section> actuals = new ArrayList<Section>();
+		
+		// exec - except
+		for (Section section : sections) {
+			Section actual = sectionDao.findById(section.getId() * 1000);
+			actuals.add(actual);
+		}
+	}
 	
 	// find by sectionId
 	@Test
