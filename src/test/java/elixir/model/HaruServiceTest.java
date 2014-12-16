@@ -12,7 +12,7 @@ public class HaruServiceTest {
 		public static void ASSERT(HaruService actual, HaruService expected) {
 			assertThat(actual.getId(), is(expected.getId()));
 			assertThat(actual.getDate(), is(expected.getDate()));
-			assertThat(actual.getServiceUnit(), is(expected.getServiceUnit()));
+			assertThat(actual.getStatus(), is(expected.getStatus()));
 		}
 		
 		public static void ASSERTS(List<HaruService> actuals, List<HaruService> expecteds) {
@@ -31,7 +31,7 @@ public class HaruServiceTest {
 			
 			service.setId(id);
 			service.setDate(date);
-			service.setServiceUnit(serviceUnit);
+			service.setStatus(serviceUnit);
 			
 			return service;
 		}

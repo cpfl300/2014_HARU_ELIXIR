@@ -2,19 +2,19 @@ package elixir.model;
 
 public enum ServiceUnit {
 	
-	MORNING(0), AFTERNOON(1);
+	MORNING(false), AFTERNOON(true);
 	
-	final private int value;
+	final private boolean value;
 	
-	private ServiceUnit(int value) {
+	private ServiceUnit(boolean value) {
 		this.value = value;
 	}
 
-	public int getValue() {
+	public boolean getValue() {
 		return value;
 	}
 
-	public static ServiceUnit getEnum(int value) {
+	public static ServiceUnit getEnum(boolean value) {
 		for (ServiceUnit v : values())
 			if (v.getValue() == value) return v;
 		

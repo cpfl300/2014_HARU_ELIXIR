@@ -26,11 +26,15 @@ public class HaruService {
 		this.date = date;
 	}
 
-	public ServiceUnit getServiceUnit() {
-		return serviceUnit;
+	public boolean getStatus() {
+		return serviceUnit.getValue();
+	}
+	
+	public void setStatus(boolean status) {
+		this.serviceUnit = ServiceUnit.getEnum(status);
 	}
 
-	public void setServiceUnit(ServiceUnit serviceUnit) {
+	public void setStatus(ServiceUnit serviceUnit) {
 		this.serviceUnit = serviceUnit;
 	}
 
