@@ -15,30 +15,32 @@ public class SectionDao {
 	private JdbcTemplate jdbcTemplate;
 	private RowMapper<Section> sectionMapper = (rs, rowNum) -> {
 		Section section = new Section();
-		section.setId(rs.getInt("minor.id"));
-		section.setMajor(rs.getString("major.name"));
-		section.setMinor(rs.getString("minor.name"));
+		
+		section.setId(rs.getInt("id"));
+		section.setSectionId(rs.getString("section_id"));
+		section.setSectionName(rs.getString("section_name"));
 		
 		return section;
 		
 	};
 
-	public Section getByMinor(String minor) {
+
+	public Section findBySectionId(String sectionId) {
 		
 		return this.jdbcTemplate.queryForObject(
-					"SELECT minor.id, minor.name, major.name FROM minor_sections AS minor INNER JOIN major_sections AS major ON minor.major_sections_id = major.id WHERE minor.name = ?",
-					new Object[]{minor},
-					this.sectionMapper 
+					"SELECT id, section_id, name AS section_name FROM sections WHERE section_id = ?",
+					new Object[]{sectionId},
+					this.sectionMapper
 				);
-
 	}
+	
 
-	public Section get(int id) {
+	public Section findBySectionName(String sectionName) {
 		
 		return this.jdbcTemplate.queryForObject(
-				"SELECT minor.id, minor.name, major.name FROM minor_sections AS minor INNER JOIN major_sections AS major ON minor.major_sections_id = major.id WHERE minor.id = ?",
-				new Object[]{id},
-				this.sectionMapper 
+				"SELECT id, section_id, name AS section_name FROM sections WHERE name = ?",
+				new Object[]{sectionName},
+				this.sectionMapper
 			);
 	}
 	

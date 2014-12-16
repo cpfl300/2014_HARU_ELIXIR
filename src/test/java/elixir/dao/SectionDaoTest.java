@@ -1,67 +1,89 @@
 package elixir.dao;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
 
 import elixir.config.ElixirConfig;
 import elixir.model.Section;
+import elixir.model.SectionTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ElixirConfig.class, loader=AnnotationConfigContextLoader.class)
+@Transactional
 public class SectionDaoTest {
 	
 	@Autowired
-	private SectionDao dao;
-	private Section section1;
-	private Section section2;
-	private Section section3;
+	private SectionDao sectionDao;
+	private List<Section> sections;
+	
 	
 	@Before
 	public void setup() {
-		section1 = new Section(3, "정치", "북한");
-		section2 = new Section(10, "경제", "금융");
-		section3 = new Section(21, "사회", "언론");
+		sections = SectionTest.preparedList();
 	}
 	
-	@Test
-	public void get() {
-		Section actualSection1 = dao.get(3);
-		assertSameSection(actualSection1, section1);
-		
-		Section actualSection2 = dao.get(10);
-		assertSameSection(actualSection2, section2);
-		
-		Section actualSection3 = dao.get(21);
-		assertSameSection(actualSection3, section3);
-	}
 	
+	// find by sectionId
 	@Test
-	public void getByMinor() {
-		Section actualSection1 = dao.getByMinor("북한");
-		assertSameSection(actualSection1, section1);
+	public void findBySectionId() {
+		List<Section> actuals = new ArrayList<Section>();
 		
-		Section actualSection2 = dao.getByMinor("금융");
-		assertSameSection(actualSection2, section2);
+		// exec
+		for (Section section : sections) {
+			Section actual = sectionDao.findBySectionId(section.getSectionId());
+			actuals.add(actual);
+		}
 		
-		Section actualSection3 = dao.getByMinor("언론");
-		assertSameSection(actualSection3, section3);
+		// assert
+		SectionTest.ASSERTS(actuals, sections);
 	}
 
-	private void assertSameSection(Section actual, Section expected) {
-		assertThat(actual.getId(), not(is(0)));
-		assertThat(actual.getId(), is(expected.getId()));
-		assertThat(actual.getMajor(), is(expected.getMajor()));
-		assertThat(actual.getMinor(), is(expected.getMinor()));
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findBySectionId_emptyResultDataAccess() {
+		List<Section> actuals = new ArrayList<Section>();
 		
+		// exec - except
+		for (Section section : sections) {
+			Section actual = sectionDao.findBySectionId(section.getSectionId() + "1");
+			actuals.add(actual);
+		}
+	}
+	
+	
+	// find by sectionName
+	@Test
+	public void findBySectionName() {
+		List<Section> actuals = new ArrayList<Section>();
+		
+		// exec
+		for (Section section : sections) {
+			Section actual = sectionDao.findBySectionName(section.getSectionName());
+			actuals.add(actual);
+		}
+		
+		// assert
+		SectionTest.ASSERTS(actuals, sections);
+	}
+	
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findBySectionName_emptyResultDataAccess() {
+		List<Section> actuals = new ArrayList<Section>();
+		
+		// exec - except
+		for (Section section : sections) {
+			Section actual = sectionDao.findBySectionName(section.getSectionName() + "1");
+			actuals.add(actual);
+		}
 	}
 
 }

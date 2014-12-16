@@ -2,23 +2,33 @@ package elixir.model;
 
 public class Section {
 	
+	private int id;
 	private String sectionId;
 	private String sectionName;
 	
 	// empty
 	public Section() { }
 
-	public Section(String sectionId) {
-		this(sectionId, null);
-	}
-	
 	// standard
 	public Section(String sectionId, String sectionName) {
 		this.sectionId = sectionId;
 		this.sectionName = sectionName;
 	}
+	
+	public Section(String sectionId) {
+		this(sectionId, null);
+	}
+	
 
+	// setter getter
+	public int getId() {
+		return id;
+	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public String getSectionId() {
 		return sectionId;
 	}
