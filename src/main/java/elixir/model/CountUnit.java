@@ -1,12 +1,12 @@
 package elixir.model;
 
-public enum Unit {
+public enum CountUnit {
 	
 	MIN("minute"), HOUR("hour"), DAY("day");
 	
 	final private String name;
 	
-	private Unit(String name) {
+	private CountUnit(String name) {
 		this.name = name;
 	}
 
@@ -15,9 +15,10 @@ public enum Unit {
 		return name;
 	}
 
-	 public static Unit getEnum(String value) {
-        for(Unit v : values())
+	 public static CountUnit getEnum(String value) {
+        for(CountUnit v : values())
             if(v.getName().equalsIgnoreCase(value)) return v;
+        
         throw new IllegalArgumentException();
     }
 	

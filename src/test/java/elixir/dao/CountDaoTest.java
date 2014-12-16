@@ -6,9 +6,12 @@ import org.junit.Test;
 
 public class CountDaoTest {
 
+	// find by articleId
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void findByArticleId() {
+		
+//		List<Count> counts = countDao.findByArticleId()
+		
 	}
 
 }

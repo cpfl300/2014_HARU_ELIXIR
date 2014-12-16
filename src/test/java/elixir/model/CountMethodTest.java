@@ -10,7 +10,7 @@ public class CountMethodTest {
 	
 	
 	// create
-	public static CountMethod create(int id, int value, Unit unit) {
+	public static CountMethod create(int id, int value, CountUnit unit) {
 		CountMethod countMethod = new CountMethod();
 		
 		countMethod.setId(id);
@@ -42,9 +42,9 @@ public class CountMethodTest {
 	public static List<CountMethod> preparedList() {
 		
 		return Arrays.asList(new CountMethod[] {
-				CountMethodTest.create(1, 5, Unit.MIN),
-				CountMethodTest.create(2, 1, Unit.HOUR),
-				CountMethodTest.create(3, 1, Unit.DAY)
+				CountMethodTest.create(1, 5, CountUnit.MIN),
+				CountMethodTest.create(2, 1, CountUnit.HOUR),
+				CountMethodTest.create(3, 1, CountUnit.DAY)
 		});
 	}
 }

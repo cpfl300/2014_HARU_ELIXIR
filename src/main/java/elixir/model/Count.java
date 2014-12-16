@@ -9,8 +9,7 @@ public class Count {
 	private int readCount;
 	private int rank;
 	private Timestamp timestamp;
-	private int countValue;
-	private String countUnit;
+	private CountMethod countMethod;
 	
 	// empty
 	public Count() { }
@@ -57,22 +56,15 @@ public class Count {
 		this.timestamp = timestamp;
 	}
 
-	public int getCountValue() {
-		return countValue;
+
+	public CountMethod getCountMethod() {
+		return countMethod;
 	}
 
-	public void setCountValue(int countValue) {
-		this.countValue = countValue;
+
+	public void setCountMethod(CountMethod countMethod) {
+		this.countMethod = countMethod;
 	}
 
-	public String getCountUnit() {
-		return countUnit;
-	}
-
-	public void setCountUnit(String countUnit) {
-		this.countUnit = countUnit;
-	}
-	
-	
 
 }

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import elixir.model.CountMethod;
-import elixir.model.Unit;
+import elixir.model.CountUnit;
 
 @Repository
 public class CountMethodDao {
@@ -18,7 +18,7 @@ public class CountMethodDao {
 		
 		countMethod.setId(rs.getInt("id"));
 		countMethod.setValue(rs.getInt("value"));
-		countMethod.setUnit(Unit.getEnum(rs.getString("unit")));
+		countMethod.setUnit(CountUnit.getEnum(rs.getString("unit")));
 		
 		return countMethod;
 		

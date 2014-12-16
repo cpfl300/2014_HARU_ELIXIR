@@ -4,7 +4,7 @@ public class CountMethod {
 	
 	private int id;
 	private int value;
-	private Unit unit;
+	private CountUnit unit;
 	
 	// empty
 	public CountMethod() { }
@@ -28,11 +28,11 @@ public class CountMethod {
 		this.value = value;
 	}
 
-	public Unit getUnit() {
+	public CountUnit getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Unit unit) {
+	public void setUnit(CountUnit unit) {
 		this.unit = unit;
 	}
 
