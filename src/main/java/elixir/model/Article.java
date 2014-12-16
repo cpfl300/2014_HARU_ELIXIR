@@ -1,9 +1,6 @@
 package elixir.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import refinery.model.NaverSection;
+import java.sql.Timestamp;
 
 
 public class Article {
@@ -21,16 +18,66 @@ public class Article {
 //	private String timestamp;
 //	private int sequence;
 	
-	private String articleId;
-	private Journal journal;
-	private List<Section> sections;
-	private String title;
-	private String imageUrl;
-	private String serviceDate;
-	private String serviceTime;
-	private int hitCount;
-	private int readCount;
+	private int id;
 	
+	// essential
+	private String articleId;
+	private Office office;
+	private Section section;
+	private String contributionDate;
+	private String contributionTime;
+	private String title;
+
+	// nullable
+	private String content;
+	private String orgUrl;
+	private String imageUrl;
+	private double score;
+	
+	// default
+	private Timestamp timestamp;
+		
+	// empty
+	public Article() { }
+	
+	// all - standard
+	public Article(int id, String articleId, Office office, Section section,  
+			String contributionDate, String contributionTime, String title,
+			String content, String orgUrl, String imageUrl, double score,
+			Timestamp timestamp) {
+		this.id = id;
+		this.articleId = articleId;
+		this.office = office;
+		this.section = section;
+		this.contributionDate = contributionDate;
+		this.contributionTime = contributionTime;
+		this.title = title;
+		
+		this.content = content;
+		this.orgUrl = orgUrl;
+		this.imageUrl = imageUrl;
+		
+		this.score = score;
+		this.timestamp = timestamp;
+	}
+	
+	// all - need to wrap
+	public Article(
+			int id, String articleId, String officeId, String sectionId, 
+			String contributionDate, String contributionTime, String title,
+			String content, String orgUrl, String imageUrl, double score,
+			Timestamp timestamp) {
+		
+		this(id, articleId, new Office(officeId), new Section(sectionId), 
+				contributionDate, contributionTime,  title,
+				content, orgUrl, imageUrl, score, timestamp);
+	}
+
+
+	
+	
+	
+
 	// From NaverArticleList
 	// "articleId" : "0006718568",
 	// Journal
@@ -40,86 +87,77 @@ public class Article {
 	// "serviceTime" : "103000",
 	// "imageUrl" : "http://imgnews.naver.net/image/origin/001/2014/01/24/6718568.jpg",
 	// "reporter" : "정빛나",
-	public Article(
-			String articleId, Journal journal, List<Section> sections,
-			String title, String imageUrl, String serviceDate, String serviceTime,
-			int hitCount, int readCount) {
-		
-			this.articleId = articleId;
-			this.journal = journal;
-			this.sections = sections;
-			this.title = title;
-			this.imageUrl = imageUrl;
-			this.serviceDate = serviceDate;
-			this.serviceTime = serviceTime;
-			this.hitCount = hitCount;
-			this.readCount = readCount;
-	}
+
+//	public Article(String articleId, Journal journal, String title,
+//			String orgUrl, Section section, String serviceDate, String serviceTime, String imageUrl) {
+//		
+//		this(0, articleId, journal, title, null, orgUrl, section, serviceDate, serviceTime, imageUrl, 0, 0);
+//	}
+//	
+
 	
 	
-	
-//	public Article() {
+//	public String getTimestamp() {
+//		return timestamp;
+//	}
 //
-//	}
-//	
-//	// update score
-//	public Article(int id, double score) {
-//		this.id = id;
-//		this.score = score;
-//	}
-//	
-//	
-//	// half_day
-//	public Article(int id, int sequence, String timestamp) {
-//		this.id = id;
-//		this.sequence = sequence;
+//	public void setTimestamp(String timestamp) {
+//		if (timestamp.lastIndexOf('.') != -1) {
+//			this.timestamp = usableDateStr(timestamp);
+//			return;
+//		}
+//		
 //		this.timestamp = timestamp;
 //	}
+//
 //	
-//	// self dependency
-//	// asListWithSequenceIncludeTimestamp
-//	public Article(int id, String timestamp, int sequence) {
-//		this.id = id;
-//		this.timestamp = timestamp;
+//	private String usableDateStr(String dateStr) {
+//		
+//		return dateStr.substring(0, dateStr.lastIndexOf("."));
+//	}
+//
+//	
+//	public int getSequence() {
+//		return sequence;
+//	}
+//
+//	public void setSequence(int sequence) {
 //		this.sequence = sequence;
 //	}
 //	
-//	// standard
-//	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount) {
-//		this(id, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+//	public void clacScore() {
+//		this.score = (double) this.completedReadingCount / this.hits;
+//		
 //	}
-//	
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount) {
-//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, 0);
+
+
+
+
+//	public static List<Article> asList(List<Hotissue> hotissues) {
+//		List<Article> articles = new ArrayList<Article>();
+//		
+//		for (Hotissue hotissue : hotissues) {
+//			articles.addAll(hotissue.getArticles());
+//			
+//		}
+//		
+//		return articles;
 //	}
-//	
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount, double score) {
-//		this(0, hotissue, journal, section, title, date, content, hits, completedReadingCount, score);
+//
+//	public static List<Article> asListWithSequenceIncludeTimestamp(List<Hotissue> hotissues, String timestamp) {
+//		List<Article> articles = new ArrayList<Article>();
+//		int sequence = 1;
+//		
+//		for (Hotissue hotissue : hotissues) {
+//			for (Article a : hotissue.getArticles()) {
+//				articles.add(new Article(a.getId(), timestamp, sequence++));
+//			}
+//		}
+//		
+//		return articles;
 //	}
 	
-	// standard
-//	public Article(int id, Hotissue hotissue, Journal journal, Section section, String title, String date, String content, int hits,
-//			int completedReadingCount, double score) {
-//		this.id = id;
-//		this.hotissue = hotissue;
-//		this.journal = journal;
-//		this.section = section;
-//		this.title = title;
-//		this.date = date;
-//		this.content = content;
-//		this.hits = hits;
-//		this.completedReadingCount = completedReadingCount;
-//		this.score = score;
-//	}
-//	
-//	public Article(Hotissue hotissue, Journal journal, Section section, String title, String date) {
-//		this(0, hotissue, journal, section, title, date, null, 0, 0, 0);
-//	}
-
-
+	
 
 	public int getId() {
 		return id;
@@ -129,20 +167,20 @@ public class Article {
 		this.id = id;
 	}
 
-	public Hotissue getHotissue() {
-		return hotissue;
+	public String getArticleId() {
+		return articleId;
 	}
 
-	public void setHotissue(Hotissue hotissue) {
-		this.hotissue = hotissue;
+	public void setArticleId(String articleId) {
+		this.articleId = articleId;
 	}
 
-	public Journal getJournal() {
-		return journal;
+	public Office getOffice() {
+		return office;
 	}
 
-	public void setJournal(Journal journal) {
-		this.journal = journal;
+	public void setOffice(Office office) {
+		this.office = office;
 	}
 
 	public Section getSection() {
@@ -161,19 +199,6 @@ public class Article {
 		this.title = title;
 	}
 
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		if (date.lastIndexOf('.') != -1) {
-			this.date = usableDateStr(date);
-			return;
-		}
-		
-		this.date = date;
-	}
-
 	public String getContent() {
 		return content;
 	}
@@ -182,20 +207,36 @@ public class Article {
 		this.content = content;
 	}
 
-	public int getHits() {
-		return hits;
+	public String getOrgUrl() {
+		return orgUrl;
 	}
 
-	public void setHits(int hits) {
-		this.hits = hits;
+	public void setOrgUrl(String orgUrl) {
+		this.orgUrl = orgUrl;
 	}
 
-	public int getCompletedReadingCount() {
-		return completedReadingCount;
+	public String getContributionDate() {
+		return contributionDate;
 	}
 
-	public void setCompletedReadingCount(int completedReadingCount) {
-		this.completedReadingCount = completedReadingCount;
+	public void setContributionDate(String contributionDate) {
+		this.contributionDate = contributionDate;
+	}
+
+	public String getContributionTime() {
+		return contributionTime;
+	}
+
+	public void setContributionTime(String contributionTime) {
+		this.contributionTime = contributionTime;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public double getScore() {
@@ -206,67 +247,16 @@ public class Article {
 		this.score = score;
 	}
 
-	public String getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(String timestamp) {
-		if (timestamp.lastIndexOf('.') != -1) {
-			this.timestamp = usableDateStr(timestamp);
-			return;
-		}
-		
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
-
-	
-	private String usableDateStr(String dateStr) {
-		
-		return dateStr.substring(0, dateStr.lastIndexOf("."));
-	}
-
-	
-	public int getSequence() {
-		return sequence;
-	}
-
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-	
-	public void clacScore() {
-		this.score = (double) this.completedReadingCount / this.hits;
-		
-	}
-	
-	
-
-
 	
 	
 	
-	public static List<Article> asList(List<Hotissue> hotissues) {
-		List<Article> articles = new ArrayList<Article>();
-		
-		for (Hotissue hotissue : hotissues) {
-			articles.addAll(hotissue.getArticles());
-			
-		}
-		
-		return articles;
-	}
-
-	public static List<Article> asListWithSequenceIncludeTimestamp(List<Hotissue> hotissues, String timestamp) {
-		List<Article> articles = new ArrayList<Article>();
-		int sequence = 1;
-		
-		for (Hotissue hotissue : hotissues) {
-			for (Article a : hotissue.getArticles()) {
-				articles.add(new Article(a.getId(), timestamp, sequence++));
-			}
-		}
-		
-		return articles;
-	}
+	
 	
 }

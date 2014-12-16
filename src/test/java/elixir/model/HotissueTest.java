@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -167,6 +168,41 @@ public class HotissueTest {
 		journal1 = new Journal(84);
 		journal2 = new Journal(10);
 		journal3 = new Journal(23);		
+	}
+	
+	// asserter
+	public static void ASSERT(Hotissue actual, Hotissue expected) {
+		assertThat(actual.getHotissueId(), is(expected.getHotissueId()));
+		assertThat(actual.getTitle(), is(expected.getTitle()));
+	}
+	
+	public static void ASSERTS(List<Hotissue> actuals, List<Hotissue> expecteds) {
+		assertThat(actuals.size(), is(expecteds.size()));
+		for (int i=0; i<actuals.size(); i++) {
+			Hotissue actual = actuals.get(i);
+			Hotissue expected = expecteds.get(i);
+			
+			HotissueTest.ASSERT(actual, expected);
+		}
+	}
+	
+	// creator
+	public static Hotissue CREATE(String hotissueId, String title) {
+		Hotissue hotissue = new Hotissue();
+		
+		hotissue.setHotissueId(hotissueId);
+		hotissue.setTitle(title);
+		
+		return hotissue;
+	}
+	
+	public static List<Hotissue> PREPARED_LIST() {
+		
+		return Arrays.asList(new Hotissue[]{
+				HotissueTest.CREATE("887522", "연애지침서"),
+				HotissueTest.CREATE("893847", "화제의 판결"),
+				HotissueTest.CREATE("887553", "따뜻한 세상")
+			});
 	}
 	
 }

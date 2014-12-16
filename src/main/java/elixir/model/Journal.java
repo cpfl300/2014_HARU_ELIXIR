@@ -2,12 +2,10 @@ package elixir.model;
 
 public class Journal {
 	
-//	private int id;
-//	private String name;
+	private String id;
+	private String name;
 //	private String section;
 	
-	private String officeId;
-	private String officeName;
 	
 //	public Journal() {
 //	}
@@ -33,62 +31,35 @@ public class Journal {
 	// From NaverArticleList
 	// "officeId" : "421",
 	// "officeName" : "",
-	public Journal(String officeId, String officeName) {
-		this.officeId = officeId;
-		this.officeName = officeName;
+//	public Journal(String officeId, String officeName) {
+//		this.officeId = officeId;
+//		this.officeName = officeName;
+//	}
+	
+	public Journal(String id, String name) {
+		this.id = id;
+		this.name = name;
 	}
 
-	public int getId() {
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+
+	public void setId(String id) {
 		this.id = id;
 	}
+
 
 	public String getName() {
 		return name;
 	}
 
+
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getSection() {
-		return section;
-	}
-
-	public void setSection(String section) {
-		this.section = section;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Journal other = (Journal) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Journal [id=" + id + ", name=" + name + ", section=" + section + "]";
-	}
+	
+	
 }
