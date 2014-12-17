@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,7 @@ public class ElixirUtilsTest {
 	}
 	
 	@Test
-	public void parseAndFormt() {
+	public void parseAndFormat() {
 		String format1 = "yyMMdd";
 		String format2 = "yyyyMMdd";
 		String format3 = "yyyy-MM-dd";
@@ -169,6 +170,17 @@ public class ElixirUtilsTest {
 		assertThat(actualDates1[1], is("2014-12-07 05:59:59"));
 		assertThat(actualDates2[0], is("2014-12-07 06:00:00"));
 		assertThat(actualDates2[1], is("2014-12-07 17:59:59"));
+	}
+	
+	// create	
+	public static List<Date> preparedList() {
+		
+		return Arrays.asList(new Date[] {
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 1, 6),
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 2, 6),
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 3, 6)
+		});
+		
 	}
 
 }

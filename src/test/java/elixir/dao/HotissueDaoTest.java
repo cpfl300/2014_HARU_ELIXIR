@@ -1,10 +1,10 @@
 package elixir.dao;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -22,9 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import elixir.config.ElixirConfig;
 import elixir.model.Article;
 import elixir.model.Hotissue;
-import elixir.model.Journal;
+import elixir.model.HotissueTest;
 import elixir.model.Section;
-import elixir.utility.ElixirUtils;
+import elixir.model.SectionTest;
+import elixir.test.ElixirTestUtils;
+import elixir.utility.ElixirUtilsTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ElixirConfig.class, loader=AnnotationConfigContextLoader.class)
@@ -32,47 +34,43 @@ import elixir.utility.ElixirUtils;
 public class HotissueDaoTest {
 	
 	@Autowired
-	private HotissueDao hotissueDao;
+	private SectionDao sectionDao;
 	
 	@Autowired
-	private ArticleDao articleDao;
-	
-	private Hotissue hotissue1;
-	private Hotissue hotissue2;
-	private Hotissue hotissue3;
-	
-	private Article article1;
-	private Article article2;
-	private Article article3;
-	
-	private Journal journal;
-	private Section section;
+	private HotissueDao hotissueDao;
 	
 	private List<Hotissue> hotissues;
+	private List<Section> sections;
 	
 	@Before
 	public void setup() {
-		makeFixtures();
+		List<Date> dates = ElixirUtilsTest.preparedList();
+		sections = SectionTest.preparedList();
+		hotissues = HotissueTest.preparedList(dates, sections);
 	}
 	
-	// read
+	
 	@Test
-	public void getCount() {
-		initDao();
-		
-		// add and get
-		hotissueDao.add(hotissue1);
-		assertThat(hotissueDao.getCount(), is(1));
-		
-		// add and get
-		hotissueDao.add(hotissue2);
-		assertThat(hotissueDao.getCount(), is(2));
-		
-		// add and get
-		hotissueDao.add(hotissue3);
-		assertThat(hotissueDao.getCount(), is(3));
+	public void size() {
+		int actual = hotissueDao.getCount();
+		assertThat(actual, is(0));
 	}
 	
+	@Test
+	public void addAll() {
+		prepareSectionDao(sections);
+		int[] actuals = hotissueDao.addAll(hotissues);
+		assertThat(ElixirTestUtils.getCount(actuals), is(hotissueDao.getCount()));
+	}
+	
+	
+	
+	
+	// preprare dao
+	private void prepareSectionDao(List<Section> sections) {
+		sectionDao.addAll(sections);
+	}
+
 
 	// find hotissue
 	@Test
@@ -326,56 +324,5 @@ public class HotissueDaoTest {
 		assertThat(hotissueDao.findById(hotissue1.getId()).getScore(), is(hotissues.get(0).getScore()));		
 	}
 
-	private void assertSameStandardHotissue(Hotissue actual, Hotissue expected) {
-		assertThat(actual.getId(), is(expected.getId()));
-		assertThat(actual.getName(), is(expected.getName()));
-		assertThat(ElixirUtils.parseFormattedDate(actual.getTimestamp()), is(notNullValue()));
-	}
 	
-	private int getCount(int[] affectedRows) {
-		int size = 0;
-		
-		for (int row : affectedRows) {
-			size += row;
-		}
-		
-		return size;
-	}
-	
-	private void initDao() {
-		articleDao.deleteAll();
-		assertThat(articleDao.getCount(), is(0));
-		
-		hotissueDao.deleteAll();
-		assertThat(hotissueDao.getCount(), is(0));
-	}
-	
-	private void prepareHotissueDao(Hotissue[] hotissues) {
-		hotissueDao.addHotissues(Arrays.asList(hotissues));
-	}
-	
-	
-	private void prepareArticleDao(Article[] articles) {
-		articleDao.addArticles(Arrays.asList(articles));
-	}
-	
-	
-	private void updateHotissueScore(Hotissue[] hotissues) {
-		hotissueDao.updateScores(Arrays.asList(hotissues));
-	}
-	
-	private void makeFixtures() {
-		journal = new Journal(84);
-		section = new Section(3);
-		
-		hotissue1 = new Hotissue(1, "hotissue1");
-		hotissue2 = new Hotissue(2, "hotissue2");
-		hotissue3 = new Hotissue(3, "hotissue3");
-		
-		article1 = new Article(1, hotissue1, journal, section, "title1", "1111-01-01 01:11:11", "content1", 10000, 7000, 10.1);
-		article2 = new Article(2, hotissue2, journal, section, "title2", "1222-02-02 02:11:11", "content2", 20000, 8000, 20.1);
-		article3 = new Article(3, hotissue3, journal, section, "title3", "1333-03-03 03:11:11", "content3", 30000, 9000, 30.1);
-	}
-
-
 }

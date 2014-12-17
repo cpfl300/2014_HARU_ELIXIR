@@ -1,14 +1,30 @@
 package elixir.model;
 
+import java.sql.Timestamp;
+
 
 public class Hotissue {
 	
+	private int id;
 	private String hotissueId;
 	private String title;
+	private Section section;
+	private double score;
+	private String imageUrl;
+	private Timestamp timestamp;
 	
-	// empth
+	// empty
 	public Hotissue() { }
 
+	
+	// setter getter
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getHotissueId() {
 		return hotissueId;
@@ -26,21 +42,36 @@ public class Hotissue {
 		this.title = title;
 	}
 
-//	public static List<Hotissue> orderByHotissue(List<Article> articles) {
-//		// 자칫 많아질 수 있는 key검색을 O(1)로 계산위해 map 사용
-//		Map<Hotissue, Hotissue> hotissueMap = new HashMap<Hotissue, Hotissue>();
-//		
-//		for (Article article : articles) {
-//			Hotissue hotissue = article.getHotissue();
-//			if (!hotissueMap.containsKey(hotissue)) {
-//				hotissueMap.put(hotissue, null);
-//			}
-//			
-//			hotissue.addArticle(article);
-//		}
-//		
-//		return new ArrayList<Hotissue>(hotissueMap.keySet());
-//	}
-	
-	
+	public Section getSection() {
+		return section;
+	}
+
+	public void setSection(Section section) {
+		this.section = section;
+	}
+
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+
 }
