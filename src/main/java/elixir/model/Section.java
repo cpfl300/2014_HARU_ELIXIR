@@ -20,6 +20,9 @@ public class Section {
 		this(sectionId, null);
 	}
 	
+	public Section(int id) {
+		this.id = id;
+	}
 
 	// setter getter
 	public int getId() {
@@ -53,5 +56,12 @@ public class Section {
 	public void setSuperId(int superId) {
 		this.superId = superId;
 	}
+
+	@Override
+	public String toString() {
+		return "Section [id=" + id + ", sectionId=" + sectionId + ", sectionName=" + sectionName + ", superId=" + superId + "]";
+	}
+	
+	
 	
 }

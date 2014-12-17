@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -22,8 +24,25 @@ import elixir.model.Section;
 @Repository
 public class HotissueDao {
 	
+	private static final Logger log = LoggerFactory.getLogger(HotissueDao.class);
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	private RowMapper<Hotissue> hotissueMapper = (rs, rowNum) -> {
+		Hotissue hotissue = new Hotissue();
+		
+		hotissue.setId(rs.getInt("id"));
+		hotissue.setHotissueId(rs.getString("hotissue_id"));
+		hotissue.setTitle(rs.getString("title"));
+		hotissue.setSection(new Section(rs.getInt("sections_id")));
+		hotissue.setScore(rs.getDouble("score"));
+		hotissue.setImageUrl(rs.getString("image_url"));
+		hotissue.setTimestamp(rs.getTimestamp("timestamp"));
+		
+		return hotissue;
+		
+	};
 	
 //	private RowMapper<Hotissue> hotissueMapper = (rs, rowNum) -> {		
 //		Hotissue hotissue = new Hotissue();
@@ -97,7 +116,7 @@ public class HotissueDao {
 
 	public int[] addAll(List<Hotissue> hotissues) {
 		return this.jdbcTemplate.batchUpdate(
-			"INSERT INTO hotissues (hotissue_id, title, image_url, section_id) VALUES (?,?,?,?)",
+			"INSERT INTO hotissues (hotissue_id, title, image_url, sections_id) VALUES (?,?,?,?)",
 			new BatchPreparedStatementSetter() {
 	
 				@Override
@@ -117,6 +136,24 @@ public class HotissueDao {
 				}
 				
 			});	
+	}
+
+	// find
+	public Hotissue findByHotissueId(String hotissueId) {
+		
+		return this.jdbcTemplate.queryForObject(
+				"SELECT * FROM hotissues WHERE hotissue_id = ?",
+				new Object[]{hotissueId},
+				this.hotissueMapper); 
+	}
+
+	void initAutoIncrement(int num) {
+		this.jdbcTemplate.execute("ALTER TABLE hotissues AUTO_INCREMENT="+num);
+	}
+
+	int getLastId() {
+		
+		return this.jdbcTemplate.queryForInt("SELECT LAST_INSERT_ID()");
 	}
 
 	

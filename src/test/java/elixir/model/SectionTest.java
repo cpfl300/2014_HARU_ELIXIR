@@ -4,7 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import elixir.test.ElixirTestUtils;
 
 public class SectionTest {
 	
@@ -42,10 +45,18 @@ public class SectionTest {
 	public static List<Section> preparedList() {
 		
 		return Arrays.asList(new Section[] {
-				SectionTest.create(4, "104", "생활/문화", 0),
+				SectionTest.create(4, "104", "생활/문화", 1),
 				SectionTest.create(34, "227", "지역", 3),
 				SectionTest.create(91, "316", "3단계_16", 40)
 		});
+	}
+	
+	public static List<Section> preparedList(String[] fields){
+		List<Section> sections = SectionTest.preparedList();
+		
+		ElixirTestUtils.initComplementaryFields(sections, fields);
+		
+		return sections;
 	}
 
 }

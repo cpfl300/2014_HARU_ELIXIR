@@ -74,4 +74,5 @@ public class Hotissue {
 		this.timestamp = timestamp;
 	}
 
+
 }
