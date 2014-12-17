@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -92,7 +94,44 @@ public class SectionDao {
 		return holder.getKey().intValue();
 
 	}
+	
+	public int[] addAll(List<Section> sections) {
+		
+		return this.jdbcTemplate.batchUpdate(
+				"INSERT INTO sections (section_id, name, super_sections_id) VALUES (?,?,?)",
+				new BatchPreparedStatementSetter() {
+
+					@Override
+					public void setValues(PreparedStatement ps, int i) throws SQLException {
+						Section section = sections.get(i);
+						
+						ps.setString(1, section.getSectionId());
+						ps.setString(2, section.getSectionName());
+						ps.setInt(3, section.getSuperId());
+						
+					}
+
+					@Override
+					public int getBatchSize() {
+						
+						return sections.size();
+					}
+					
+				});
+	}
 
 
+	
+	// delete
+	public void deleteAll() {
+		this.jdbcTemplate.update("DELETE FROM sections");
+	}
+
+	
+	// size
+	public int size() {
+		
+		return this.jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sections");
+	}
 	
 }

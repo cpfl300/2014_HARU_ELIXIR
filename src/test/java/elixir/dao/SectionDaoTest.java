@@ -1,6 +1,10 @@
 package elixir.dao;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -16,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import elixir.config.ElixirConfig;
 import elixir.model.Section;
 import elixir.model.SectionTest;
+import elixir.test.ElixirTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=ElixirConfig.class, loader=AnnotationConfigContextLoader.class)
@@ -31,6 +36,18 @@ public class SectionDaoTest {
 	public void setup() {
 		sections = SectionTest.preparedList();
 	}
+	
+	// size
+	@Test
+	public void size() {
+		// init size
+		int initSize = sectionDao.size();
+		
+		// add
+		sectionDao.add(SectionTest.create(0, "999", "test", 1));
+		assertThat(sectionDao.size(), is(initSize + 1));
+	}
+	
 	
 	// add
 	@Test
@@ -52,7 +69,22 @@ public class SectionDaoTest {
 		// find by sectionId
 		actual = sectionDao.findBySectionName(expected.getSectionName());
 		SectionTest.ASSERT(actual, expected);
-
+	}
+	
+	@Test
+	public void addAll() {
+		// prepare
+		List<Section> expecteds = Arrays.asList(new Section[] {
+			SectionTest.create(0, "501", "5단계_1", 1),	
+			SectionTest.create(0, "502", "5단계_2", 1),	
+			SectionTest.create(0, "503", "5단계_3", 1)	
+		});
+		
+		// addAll
+		int[] actuals = sectionDao.addAll(expecteds);
+		
+		// assert
+		assertThat(ElixirTestUtils.getCount(actuals), is(3));
 	}
 	
 	
