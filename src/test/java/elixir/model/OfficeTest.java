@@ -17,8 +17,10 @@ public class OfficeTest {
 	
 	
 	// create
-	public static Office create(String officeId, String name, String sectionName) {
+	public static Office create(int id, String officeId, String name, String sectionName) {
 		Office office = new Office();
+		
+		office.setId(id);
 		office.setOfficeId(officeId);
 		office.setOfficeName(name);
 		office.setSectionName(sectionName);
@@ -48,9 +50,9 @@ public class OfficeTest {
 	public static List<Office> preparedList() {
 		
 		return Arrays.asList(new Office[] {
-				OfficeTest.create("101", "경향신문", "종합"),
-				OfficeTest.create("209", "한국경제", "경제"),
-				OfficeTest.create("711", "인벤", "인터넷")
+				OfficeTest.create(1, "101", "경향신문", "종합"),
+				OfficeTest.create(19, "209", "한국경제", "경제"),
+				OfficeTest.create(74, "711", "인벤", "인터넷")
 		});
 	}
 

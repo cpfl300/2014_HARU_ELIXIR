@@ -98,13 +98,15 @@ public class ArticleTest {
 	}
 
 	// create
-	public static Article CREATE(String articleId, Office office, Section section, String contributionDate, String contributionTime,
+	public static Article create(int id, String articleId, Office office, Section section, String content, String contributionDate, String contributionTime,
 			String title, String orgUrl, String imageUrl) {
-		
 		Article article = new Article();
+		
+		article.setId(id);
 		article.setArticleId(articleId);
 		article.setOffice(office);
 		article.setSection(section);
+		article.setContent(content);
 		article.setContributionDate(contributionDate);
 		article.setContributionTime(contributionTime);
 		article.setTitle(title);
@@ -115,12 +117,12 @@ public class ArticleTest {
 	}
 
 	
-	public static List<Article> PREPARED_LIST(Section... sections) {
+	public static List<Article> preparedList(List<Office> offices, List<Section> sections) {
 		
 		return Arrays.asList(new Article[] {
-				ArticleTest.CREATE("111", new Office("001", "officeName1"), sections[0], "20140101", "010101", "title1", "orgUrl1", "imageUrl1"),
-				ArticleTest.CREATE("222", new Office("002", "officeName2"), sections[1], "20140102", "010102", "title2", "orgUrl2", "imageUrl2"),
-				ArticleTest.CREATE("333", new Office("003", "officeName3"), sections[2], "20140103", "010103", "title3", "orgUrl3", "imageUrl3")
+				ArticleTest.create(1, "111", offices.get(0), sections.get(0), "content1", "20140101", "010101", "title1", "orgUrl1", "imageUrl1"),
+				ArticleTest.create(2, "222", offices.get(1), sections.get(1), "content2", "20140102", "010102", "title2", "orgUrl2", "imageUrl2"),
+				ArticleTest.create(3, "333", offices.get(2), sections.get(2), "content3", "20140103", "010103", "title3", "orgUrl3", "imageUrl3")
 		});
 	}
 
