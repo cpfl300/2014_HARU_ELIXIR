@@ -1,6 +1,7 @@
 package elixir.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 
 public class Article {
@@ -23,7 +24,8 @@ public class Article {
 	// essential
 	private String articleId;
 	private Office office;
-	private Section section;
+//	private Section section;
+	private List<Section> sections;
 	private String contributionDate;
 	private String contributionTime;
 	private String title;
@@ -41,37 +43,37 @@ public class Article {
 	public Article() { }
 	
 	// all - standard
-	public Article(int id, String articleId, Office office, Section section,  
-			String contributionDate, String contributionTime, String title,
-			String content, String orgUrl, String imageUrl, double score,
-			Timestamp timestamp) {
-		this.id = id;
-		this.articleId = articleId;
-		this.office = office;
-		this.section = section;
-		this.contributionDate = contributionDate;
-		this.contributionTime = contributionTime;
-		this.title = title;
-		
-		this.content = content;
-		this.orgUrl = orgUrl;
-		this.imageUrl = imageUrl;
-		
-		this.score = score;
-		this.timestamp = timestamp;
-	}
-	
-	// all - need to wrap
-	public Article(
-			int id, String articleId, String officeId, String sectionId, 
-			String contributionDate, String contributionTime, String title,
-			String content, String orgUrl, String imageUrl, double score,
-			Timestamp timestamp) {
-		
-		this(id, articleId, new Office(officeId), new Section(sectionId), 
-				contributionDate, contributionTime,  title,
-				content, orgUrl, imageUrl, score, timestamp);
-	}
+//	public Article(int id, String articleId, Office office, Section section,  
+//			String contributionDate, String contributionTime, String title,
+//			String content, String orgUrl, String imageUrl, double score,
+//			Timestamp timestamp) {
+//		this.id = id;
+//		this.articleId = articleId;
+//		this.office = office;
+//		this.section = section;
+//		this.contributionDate = contributionDate;
+//		this.contributionTime = contributionTime;
+//		this.title = title;
+//		
+//		this.content = content;
+//		this.orgUrl = orgUrl;
+//		this.imageUrl = imageUrl;
+//		
+//		this.score = score;
+//		this.timestamp = timestamp;
+//	}
+//	
+//	// all - need to wrap
+//	public Article(
+//			int id, String articleId, String officeId, String sectionId, 
+//			String contributionDate, String contributionTime, String title,
+//			String content, String orgUrl, String imageUrl, double score,
+//			Timestamp timestamp) {
+//		
+//		this(id, articleId, new Office(officeId), new Section(sectionId), 
+//				contributionDate, contributionTime,  title,
+//				content, orgUrl, imageUrl, score, timestamp);
+//	}
 
 
 	
@@ -183,12 +185,12 @@ public class Article {
 		this.office = office;
 	}
 
-	public Section getSection() {
-		return section;
+	public List<Section> getSections() {
+		return sections;
 	}
 
-	public void setSection(Section section) {
-		this.section = section;
+	public void setSection(List<Section> sections) {
+		this.sections = sections;
 	}
 
 	public String getTitle() {

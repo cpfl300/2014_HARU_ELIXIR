@@ -32,8 +32,7 @@ public class HotissueTest {
 		assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getHotissueId(), is(expected.getHotissueId()));
 		assertThat(actual.getTitle(), is(expected.getTitle()));
-		//SectionTest.ASSERT(actual.getSection(), expected.getSection());
-		assertThat(actual.getSection().getId(), is(expected.getSection().getId()));
+		if (expected.getSection() != null) SectionTest.ASSERT(actual.getSection(), expected.getSection());
 		assertThat(actual.getScore(), is(expected.getScore()));
 		assertThat(actual.getImageUrl(), is(expected.getImageUrl()));
 	}
@@ -74,7 +73,6 @@ public class HotissueTest {
 	
 	public static List<Hotissue> preparedList(List<Date> dates, List<Section> sections, String[] fields){
 		List<Hotissue> hotissues = HotissueTest.preparedList(dates, sections);
-		
 		ElixirTestUtils.initComplementaryFields(hotissues, fields);
 		
 		return hotissues;

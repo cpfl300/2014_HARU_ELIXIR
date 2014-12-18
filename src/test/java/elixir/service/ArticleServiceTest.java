@@ -1,18 +1,9 @@
 package elixir.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,17 +11,14 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import elixir.dao.ArticleDao;
-import elixir.dao.JournalDao;
-import elixir.dao.SectionDao;
 import elixir.model.Article;
-import elixir.model.Hotissue;
-import elixir.model.Journal;
+import elixir.model.ArticleTest;
+import elixir.model.Office;
+import elixir.model.OfficeTest;
 import elixir.model.Section;
-import elixir.utility.ElixirUtils;
+import elixir.model.SectionTest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArticleServiceTest {
@@ -44,32 +32,35 @@ public class ArticleServiceTest {
 	private ArticleDao articleDaoMock;
 	
 	@Mock
-	private JournalDao journalDaoMock;
+	private SectionService sectionServiceMock;
 	
-	@Mock
-	private SectionDao sectionDaoMock;
-	
-	@Mock
-	private HotissueService hotissueServiceMock;
-	
-	private Article article1;
-	private Article article2;
-	private Article article3;
 	
 	private List<Article> articles;
-	private List<Hotissue> hotissues;
 	private List<Section> sections;
-	private List<Journal> journals;
-
-	@Before
-	public void setup() {
-		makeJournalDaoMocks();
-		makeSectionDaoMocks();
-		makeHotissueServiceMocks();
+	
+	
+	@Test
+	public void addAll() {
+		// prepare
+		prepareForAddAll();
 		
-		makeArticleDaoMocks();
+		articleService.addAll(articles);
+		
+		// mock verify
+		verify(articleDaoMock, times(1)).addAll(articles);
+		verify(sectionServiceMock, times(3)).addAll(sections);
 	}
-
+	
+	
+	private void prepareForAddAll() {
+		List<Office> offices = OfficeTest.preparedList(new String[]{"officeId", "officeName"});
+		sections = SectionTest.preparedList(new String[]{"sectionId", "sectionName"});
+		articles = ArticleTest.preparedList(offices, sections,
+				new String[]{"office", "articleId", "title", "content",
+				"orgUrl", "contributionDate", "contributionTime", "imageUrl"});
+	}
+	
+	
 //	@Test
 //	public void has() {
 //		when(articleDaoMock.findById(article1.hashCode())).thenReturn(article1);
@@ -239,157 +230,157 @@ public class ArticleServiceTest {
 //	}
 	
 	// read
-	@Test
-	public void getHalfDay() {
-		
-		// prepare
-		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
-		String[] serviceRange = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
-		articles = Arrays.asList(new Article[]{
-					new Article(1, new Hotissue(1), new Journal(1), new Section(1), "title1", serviceRange[0], "content1", 10000, 7100, 10.0),
-					new Article(2, new Hotissue(2), new Journal(2), new Section(2), "title2", serviceRange[0], "content2", 20000, 7200, 20.0),
-					new Article(3, new Hotissue(3), new Journal(3), new Section(3), "title3", serviceRange[0], "content3", 30000, 7300, 30.0),
-					new Article(4, new Hotissue(4), new Journal(4), new Section(4), "title4", serviceRange[0], "content4", 40000, 7400, 40.0),
-				});
-		updateSequence(articles);
-			
-		// mock
-		when(articleDaoMock.findBetweenDatesAtHalfDay(serviceRange)).thenReturn(articles);
-		
-		// exec
-		List<Article> actualArticles = articleService.getHalfDay();
-		
-		// assert
-		assertThat(actualArticles.size(), is(articles.size()));
-		
-		for (int i=0; i<actualArticles.size(); i++) {
-			Article actual = actualArticles.get(i);
-			assertThat(actual.getJournal().getName(), is(journals.get(i).getName()));
-			assertThat(actual.getSection().getMinor(), is(sections.get(i).getMinor()));
-			assertThat(actual.getSequence(), is(i+1));
-		}
-	}
-
-	@Test
-	public void getHalfDayBySequence() {
-		final int sequence = 1;
-		
-		// prepare
-		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
-		String[] serviceRange = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
-		Article article = new Article(1, new Hotissue(1), new Journal(1), new Section(1), "title1", serviceRange[0], "content1", 10000, 7100, 10.0);
-		article.setSequence(sequence);
-				
-				
-		// mock
-		when(articleDaoMock.findBySequenceBetweenDatesAtHalfDay(serviceRange, sequence)).thenReturn(article);
-		
-		// exec
-		Article actual = articleService.getHalfDayBySequence(sequence);
-		
-		// assert
-		assertThat(actual.getJournal().getName(), is(journals.get(sequence-1).getName()));
-		assertThat(actual.getSection().getMinor(), is(sections.get(sequence-1).getMinor()));
-		assertThat(actual.getSequence(), is(sequence));
-	}
-	
-	// update
-	
-	// delete
-	
-	
-	
-
-	private void makeHotissueServiceMocks() {
-		Hotissue hotissue1 = new Hotissue("hotissue1", "1001-01-01 01:11:11");
-		hotissue1.setId(hotissue1.hashCode());
-		
-		Hotissue hotissue2 = new Hotissue("hotissue2", "1002-02-02 02:11:11");
-		hotissue2.setId(hotissue2.hashCode());
-		
-		Hotissue hotissue3 = new Hotissue("hotissue3", "1003-03-03 03:11:11");
-		hotissue3.setId(hotissue3.hashCode());
-		
-		Hotissue hotissue4 = new Hotissue("hotissue4", "1004-04-04 04:11:11");
-		hotissue4.setId(hotissue4.hashCode());
-		
-		hotissues = Arrays.asList(new Hotissue[]{ hotissue1, hotissue2, hotissue3, hotissue4 });
-		
-		
-		when(hotissueServiceMock.getById(hotissue1.getId())).thenReturn(hotissue1);
-		when(hotissueServiceMock.getById(hotissue2.getId())).thenReturn(hotissue2);
-		when(hotissueServiceMock.getById(hotissue3.getId())).thenReturn(hotissue3);
-		when(hotissueServiceMock.getById(hotissue4.getId())).thenReturn(hotissue4);
-		
-		when(hotissueServiceMock.add(hotissue1)).thenReturn(hotissue1.getId());
-		when(hotissueServiceMock.add(hotissue2)).thenReturn(hotissue2.getId());
-		when(hotissueServiceMock.add(hotissue3)).thenReturn(hotissue3.getId());
-		when(hotissueServiceMock.add(hotissue4)).thenReturn(hotissue4.getId());
-	}
-
-	private void makeSectionDaoMocks() {
-		Section section1 = new Section(1, "section_major1","section_minor1"); 
-		Section section2 = new Section(2, "section_major2","section_minor2");
-		Section section3 = new Section(3, "section_major3","section_minor3");
-		Section section4 = new Section(4, "section_major4","section_minor4");
-		
-		sections = Arrays.asList(new Section[]{ section1, section2, section3, section4 });
-		
-		when(sectionDaoMock.get(section1.getId())).thenReturn(section1);
-		when(sectionDaoMock.get(section2.getId())).thenReturn(section2);
-		when(sectionDaoMock.get(section3.getId())).thenReturn(section3);
-		when(sectionDaoMock.get(section4.getId())).thenReturn(section4);
-		
-		when(sectionDaoMock.getByMinor(section1.getMinor())).thenReturn(section1);
-		when(sectionDaoMock.getByMinor(section2.getMinor())).thenReturn(section2);
-		when(sectionDaoMock.getByMinor(section3.getMinor())).thenReturn(section3);
-		when(sectionDaoMock.getByMinor(section4.getMinor())).thenReturn(section4);
-	}
-
-	private void makeJournalDaoMocks() {
-		Journal journal1 = new Journal(1, "journal1", "journal_section1");
-		Journal journal2 = new Journal(2, "journal2", "journal_section2");
-		Journal journal3 = new Journal(3, "journal3", "journal_section3");
-		Journal journal4 = new Journal(4, "journal4", "journal_section4");
-		
-		journals = Arrays.asList(new Journal[] { journal1, journal2, journal3, journal4 });
-		
-		when(journalDaoMock.get(journal1.getId())).thenReturn(journal1);
-		when(journalDaoMock.get(journal2.getId())).thenReturn(journal2);
-		when(journalDaoMock.get(journal3.getId())).thenReturn(journal3);
-		when(journalDaoMock.get(journal4.getId())).thenReturn(journal4);
-		
-		when(journalDaoMock.getByName(journal1.getName())).thenReturn(journal1);
-		when(journalDaoMock.getByName(journal2.getName())).thenReturn(journal2);
-		when(journalDaoMock.getByName(journal3.getName())).thenReturn(journal3);
-		when(journalDaoMock.getByName(journal4.getName())).thenReturn(journal4);
-	}
-	
-	private void makeArticleDaoMocks() {
-		
-		articles = new ArrayList<Article>();
-		
-		for (int i=0; i<4; i++) {
-			Hotissue hotissue = hotissues.get(i);
-			Journal journal = journals.get(i);
-			Section section = sections.get(i);
-			String title = "title" + i;
-			String date = "1111-01-01 01:11:1" + i;
-			String content = "content" + i;
-			int hits = 10000 * (i+1);
-			int completedReadingCount = 7000 + 100 * (i+1);
-			double score = 10.0 + (i+1);
-			
-			articles.add(new Article(hotissue, journal, section, title, date, content, hits, completedReadingCount, score)); 
-		}
-	}
-	
-	
-	private void updateSequence(List<Article> articles) {
-		
-		for (int i=0; i<articles.size(); i++) {
-			articles.get(i).setSequence(i+1);
-		}
-	}
+//	@Test
+//	public void getHalfDay() {
+//		
+//		// prepare
+//		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
+//		String[] serviceRange = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
+//		articles = Arrays.asList(new Article[]{
+//					new Article(1, new Hotissue(1), new Journal(1), new Section(1), "title1", serviceRange[0], "content1", 10000, 7100, 10.0),
+//					new Article(2, new Hotissue(2), new Journal(2), new Section(2), "title2", serviceRange[0], "content2", 20000, 7200, 20.0),
+//					new Article(3, new Hotissue(3), new Journal(3), new Section(3), "title3", serviceRange[0], "content3", 30000, 7300, 30.0),
+//					new Article(4, new Hotissue(4), new Journal(4), new Section(4), "title4", serviceRange[0], "content4", 40000, 7400, 40.0),
+//				});
+//		updateSequence(articles);
+//			
+//		// mock
+//		when(articleDaoMock.findBetweenDatesAtHalfDay(serviceRange)).thenReturn(articles);
+//		
+//		// exec
+//		List<Article> actualArticles = articleService.getHalfDay();
+//		
+//		// assert
+//		assertThat(actualArticles.size(), is(articles.size()));
+//		
+//		for (int i=0; i<actualArticles.size(); i++) {
+//			Article actual = actualArticles.get(i);
+//			assertThat(actual.getJournal().getName(), is(journals.get(i).getName()));
+//			assertThat(actual.getSection().getMinor(), is(sections.get(i).getMinor()));
+//			assertThat(actual.getSequence(), is(i+1));
+//		}
+//	}
+//
+//	@Test
+//	public void getHalfDayBySequence() {
+//		final int sequence = 1;
+//		
+//		// prepare
+//		Date serviceDate = ElixirUtils.nextServiceDate(ElixirUtils.getNow());
+//		String[] serviceRange = ElixirUtils.getServiceFormattedDatesByDate(serviceDate);
+//		Article article = new Article(1, new Hotissue(1), new Journal(1), new Section(1), "title1", serviceRange[0], "content1", 10000, 7100, 10.0);
+//		article.setSequence(sequence);
+//				
+//				
+//		// mock
+//		when(articleDaoMock.findBySequenceBetweenDatesAtHalfDay(serviceRange, sequence)).thenReturn(article);
+//		
+//		// exec
+//		Article actual = articleService.getHalfDayBySequence(sequence);
+//		
+//		// assert
+//		assertThat(actual.getJournal().getName(), is(journals.get(sequence-1).getName()));
+//		assertThat(actual.getSection().getMinor(), is(sections.get(sequence-1).getMinor()));
+//		assertThat(actual.getSequence(), is(sequence));
+//	}
+//	
+//	// update
+//	
+//	// delete
+//	
+//	
+//	
+//
+//	private void makeHotissueServiceMocks() {
+//		Hotissue hotissue1 = new Hotissue("hotissue1", "1001-01-01 01:11:11");
+//		hotissue1.setId(hotissue1.hashCode());
+//		
+//		Hotissue hotissue2 = new Hotissue("hotissue2", "1002-02-02 02:11:11");
+//		hotissue2.setId(hotissue2.hashCode());
+//		
+//		Hotissue hotissue3 = new Hotissue("hotissue3", "1003-03-03 03:11:11");
+//		hotissue3.setId(hotissue3.hashCode());
+//		
+//		Hotissue hotissue4 = new Hotissue("hotissue4", "1004-04-04 04:11:11");
+//		hotissue4.setId(hotissue4.hashCode());
+//		
+//		hotissues = Arrays.asList(new Hotissue[]{ hotissue1, hotissue2, hotissue3, hotissue4 });
+//		
+//		
+//		when(hotissueServiceMock.getById(hotissue1.getId())).thenReturn(hotissue1);
+//		when(hotissueServiceMock.getById(hotissue2.getId())).thenReturn(hotissue2);
+//		when(hotissueServiceMock.getById(hotissue3.getId())).thenReturn(hotissue3);
+//		when(hotissueServiceMock.getById(hotissue4.getId())).thenReturn(hotissue4);
+//		
+//		when(hotissueServiceMock.add(hotissue1)).thenReturn(hotissue1.getId());
+//		when(hotissueServiceMock.add(hotissue2)).thenReturn(hotissue2.getId());
+//		when(hotissueServiceMock.add(hotissue3)).thenReturn(hotissue3.getId());
+//		when(hotissueServiceMock.add(hotissue4)).thenReturn(hotissue4.getId());
+//	}
+//
+//	private void makeSectionDaoMocks() {
+//		Section section1 = new Section(1, "section_major1","section_minor1"); 
+//		Section section2 = new Section(2, "section_major2","section_minor2");
+//		Section section3 = new Section(3, "section_major3","section_minor3");
+//		Section section4 = new Section(4, "section_major4","section_minor4");
+//		
+//		sections = Arrays.asList(new Section[]{ section1, section2, section3, section4 });
+//		
+//		when(sectionDaoMock.get(section1.getId())).thenReturn(section1);
+//		when(sectionDaoMock.get(section2.getId())).thenReturn(section2);
+//		when(sectionDaoMock.get(section3.getId())).thenReturn(section3);
+//		when(sectionDaoMock.get(section4.getId())).thenReturn(section4);
+//		
+//		when(sectionDaoMock.getByMinor(section1.getMinor())).thenReturn(section1);
+//		when(sectionDaoMock.getByMinor(section2.getMinor())).thenReturn(section2);
+//		when(sectionDaoMock.getByMinor(section3.getMinor())).thenReturn(section3);
+//		when(sectionDaoMock.getByMinor(section4.getMinor())).thenReturn(section4);
+//	}
+//
+//	private void makeJournalDaoMocks() {
+//		Journal journal1 = new Journal(1, "journal1", "journal_section1");
+//		Journal journal2 = new Journal(2, "journal2", "journal_section2");
+//		Journal journal3 = new Journal(3, "journal3", "journal_section3");
+//		Journal journal4 = new Journal(4, "journal4", "journal_section4");
+//		
+//		journals = Arrays.asList(new Journal[] { journal1, journal2, journal3, journal4 });
+//		
+//		when(journalDaoMock.get(journal1.getId())).thenReturn(journal1);
+//		when(journalDaoMock.get(journal2.getId())).thenReturn(journal2);
+//		when(journalDaoMock.get(journal3.getId())).thenReturn(journal3);
+//		when(journalDaoMock.get(journal4.getId())).thenReturn(journal4);
+//		
+//		when(journalDaoMock.getByName(journal1.getName())).thenReturn(journal1);
+//		when(journalDaoMock.getByName(journal2.getName())).thenReturn(journal2);
+//		when(journalDaoMock.getByName(journal3.getName())).thenReturn(journal3);
+//		when(journalDaoMock.getByName(journal4.getName())).thenReturn(journal4);
+//	}
+//	
+//	private void makeArticleDaoMocks() {
+//		
+//		articles = new ArrayList<Article>();
+//		
+//		for (int i=0; i<4; i++) {
+//			Hotissue hotissue = hotissues.get(i);
+//			Journal journal = journals.get(i);
+//			Section section = sections.get(i);
+//			String title = "title" + i;
+//			String date = "1111-01-01 01:11:1" + i;
+//			String content = "content" + i;
+//			int hits = 10000 * (i+1);
+//			int completedReadingCount = 7000 + 100 * (i+1);
+//			double score = 10.0 + (i+1);
+//			
+//			articles.add(new Article(hotissue, journal, section, title, date, content, hits, completedReadingCount, score)); 
+//		}
+//	}
+//	
+//	
+//	private void updateSequence(List<Article> articles) {
+//		
+//		for (int i=0; i<articles.size(); i++) {
+//			articles.get(i).setSequence(i+1);
+//		}
+//	}
 
 }

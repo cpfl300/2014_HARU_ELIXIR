@@ -14,7 +14,7 @@ public class SectionTest {
 	
 	// assert
 	public static void ASSERT(Section actual, Section expected) {
-		assertThat(actual.getId(), is(expected.getId()));
+		// assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getSectionId(), is(expected.getSectionId()));
 		assertThat(actual.getSectionName(), is(expected.getSectionName()));
 		assertThat(actual.getSuperId(), is(expected.getSuperId()));

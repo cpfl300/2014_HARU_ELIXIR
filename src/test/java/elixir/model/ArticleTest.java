@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import elixir.test.ElixirTestUtils;
 import elixir.utility.ElixirUtils;
 
 public class ArticleTest {
@@ -56,7 +57,7 @@ public class ArticleTest {
 		assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getArticleId(), is(expected.getArticleId()));
 		assertThat(actual.getOffice().getOfficeId(), is(expected.getOffice().getOfficeId()));
-		assertThat(actual.getSection().getSectionId(), is(expected.getSection().getSectionId()));
+		//assertThat(actual.getSections().getSectionId(), is(expected.getSections().getSectionId()));
 		assertThat(actual.getContributionDate(), is(expected.getContributionDate()));
 		assertThat(actual.getContributionTime(), is(expected.getContributionTime()));
 		
@@ -72,14 +73,13 @@ public class ArticleTest {
 
 	public static void ASSERT(Article actual, Article expected) {
 		assertThat(actual.getArticleId(), is(expected.getArticleId()));
-		assertThat(actual.getOffice().getOfficeId(), is(expected.getOffice().getOfficeId()));
+		
+		if (expected.getOffice() != null) assertThat(actual.getOffice().getOfficeId(), is(expected.getOffice().getOfficeId()));
 		assertThat(actual.getTitle(), is(expected.getTitle()));
 		assertThat(actual.getContent(), is(expected.getContent()));
 		assertThat(actual.getOrgUrl(), is(expected.getOrgUrl()));
 		
-		if (expected.getSection() != null) {
-			assertThat(actual.getSection().getSectionId(), is(expected.getSection().getSectionId()));			
-		}
+		if (expected.getSection() != null) assertThat(actual.getSection().getSectionId(), is(expected.getSection().getSectionId()));
 		
 		assertThat(actual.getContributionDate(), is(expected.getContributionDate()));
 		assertThat(actual.getContributionTime(), is(expected.getContributionTime()));
@@ -105,7 +105,7 @@ public class ArticleTest {
 		article.setId(id);
 		article.setArticleId(articleId);
 		article.setOffice(office);
-		article.setSection(section);
+		//article.setSection(section);
 		article.setContent(content);
 		article.setContributionDate(contributionDate);
 		article.setContributionTime(contributionTime);
@@ -125,5 +125,13 @@ public class ArticleTest {
 				ArticleTest.create(3, "333", offices.get(2), sections.get(2), "content3", "20140103", "010103", "title3", "orgUrl3", "imageUrl3")
 		});
 	}
+	
+	public static List<Article> preparedList(List<Office> offices, List<Section> sections, String[] fields) {
+		List<Article> articles = ArticleTest.preparedList(offices, sections);
+		ElixirTestUtils.initComplementaryFields(articles, fields);
+		
+		return articles;
+	}
+	
 
 }

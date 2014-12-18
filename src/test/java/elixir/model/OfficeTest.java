@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import elixir.test.ElixirTestUtils;
+
 public class OfficeTest {
 
 	@Test
@@ -54,6 +56,14 @@ public class OfficeTest {
 				OfficeTest.create(19, "209", "한국경제", "경제"),
 				OfficeTest.create(74, "711", "인벤", "인터넷")
 		});
+	}
+
+
+	public static List<Office> preparedList(String[] fields) {
+		List<Office> offices = OfficeTest.preparedList();
+		ElixirTestUtils.initComplementaryFields(offices, fields);
+		
+		return offices;
 	}
 
 }
