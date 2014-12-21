@@ -21,6 +21,7 @@ import elixir.model.Office;
 import elixir.model.OfficeTest;
 import elixir.model.Section;
 import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 import elixir.test.ElixirTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -32,15 +33,19 @@ public class ArticleDaoTest {
 	private ArticleDao articleDao;
 
 	private List<Article> articles;
-	private List<Section> sections;
+	private List<List<Section>> sectionsList;
 	private List<Office> offices;
 	
 	
 	@Before
 	public void setup() {
 		offices = OfficeTest.preparedList();
-		sections = SectionTest.preparedList();
-		articles = ArticleTest.preparedList(offices, sections);
+		sectionsList = SectionsTest.preparedList();
+		articles = ArticleTest.preparedList(offices, sectionsList);
+		
+		for (Article article : articles) {
+			article.setContent(null);
+		}
 	}
 	
 	// size
@@ -60,6 +65,23 @@ public class ArticleDaoTest {
 		
 		// assert
 		assertThat(ElixirTestUtils.getCount(actuals), is(articleDao.size()));
+	}
+	
+	@Test
+	public void updateContent() {
+		prepareArticles();
+		
+		int[] results = new int[3];
+		for (int i=0; i<3; i++) {
+			Article article = articles.get(i);
+			results[i] = articleDao.updateContent(article.getArticleId(), article.getContent());
+		}
+		
+		assertThat(ElixirTestUtils.getCount(results), is(3));
+	}
+
+	private void prepareArticles() {
+		articleDao.addAll(articles);
 	}
 	
 	
@@ -527,15 +549,7 @@ public class ArticleDaoTest {
 //		assertThat(actual.getSequence(), is(sequence));
 //	}
 //	
-//	private int getCount(int[] affectedRows) {
-//		int size = 0;
-//		
-//		for (int row : affectedRows) {
-//			size += row;
-//		}
-//		
-//		return size;
-//	}
+
 //	
 //	private void initDao() {
 //		articleDao.deleteAll();

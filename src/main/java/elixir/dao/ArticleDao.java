@@ -65,6 +65,14 @@ public class ArticleDao {
 		return updateCounts;
 	}
 
+
+	public int updateContent(String articleId, String content) {
+		
+		return this.jdbcTemplate.update("UPDATE articles SET content = ? WHERE article_id = ?",
+				content, articleId);
+			
+	}
+
 	
 
 //	private RowMapper<Article> articleMapper = (rs, rowNum) -> {		
