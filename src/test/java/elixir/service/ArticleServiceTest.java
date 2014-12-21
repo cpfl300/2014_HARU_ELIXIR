@@ -63,7 +63,11 @@ public class ArticleServiceTest {
 	@Test
 	public void updateContent() {
 		
+		for (Article article : articles) {
+			articleService.updateContent(article);
+		}
 		
+		verify(articleDaoMock, times(3)).updateContent(anyString(), anyString());
 		
 		
 	}

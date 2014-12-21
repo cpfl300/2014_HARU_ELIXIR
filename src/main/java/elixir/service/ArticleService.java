@@ -26,6 +26,12 @@ public class ArticleService {
 		articleDao.addAll(articles);
 	}
 
+	public void updateContent(Article article) {
+		
+		articleDao.updateContent(article.getArticleId(), article.getContent());
+		
+	}
+
 	
 	
 //	@Transactional
