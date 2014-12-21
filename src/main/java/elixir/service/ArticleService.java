@@ -1,46 +1,31 @@
 package elixir.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import elixir.dao.ArticleDao;
-import elixir.dao.SectionDao;
 import elixir.model.Article;
-import elixir.model.Hotissue;
-import elixir.model.Journal;
-import elixir.model.Section;
-import elixir.utility.ElixirUtils;
 
 @Service
 public class ArticleService {
-	
-	private static final Logger log = LoggerFactory.getLogger(ArticleService.class);
 	
 	@Autowired
 	private ArticleDao articleDao;
 	
 	@Autowired
-	private SectionDao sectionDao;
+	private SectionService SectionService;
 
 	public void addAll(List<Article> articles) {
 		
 		for (Article article : articles) {
-			sectionDao.addAll(article.getSections());
+			SectionService.addAll(article.getSections());
 		}
 		
 		articleDao.addAll(articles);
 	}
-	
+
 	
 	
 //	@Transactional

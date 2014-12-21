@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 
-public class Article {
+public class Article implements Signable {
 	
 //	private int id;
 //	private Hotissue hotissue;
@@ -256,6 +256,35 @@ public class Article {
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	public void setSections(List<Section> sections) {
+		this.sections = sections;
+	}
+
+	@Override
+	public String toString() {
+		return "Article [id=" + id + ", articleId=" + articleId + ", office=" + office + ", sections=" + sections + ", contributionDate="
+				+ contributionDate + ", contributionTime=" + contributionTime + ", title=" + title + ", content=" + content + ", orgUrl=" + orgUrl
+				+ ", imageUrl=" + imageUrl + ", score=" + score + ", timestamp=" + timestamp + "]";
+	}
+
+	@Override
+	public Signature sign() {
+		Signature signature = null;
+		
+		try {
+			signature = new Signature();
+			
+			signature.setArticleId(articleId);
+			signature.setOfficeId(getOffice().getOfficeId());
+		} catch (NullPointerException e) {
+			
+			throw new SignatureFailureException("article fail to sign", e);
+		}
+		
+		return signature;
+	}
+
 	
 	
 	

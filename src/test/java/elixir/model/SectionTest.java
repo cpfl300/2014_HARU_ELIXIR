@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import elixir.test.ElixirTestUtils;
@@ -14,10 +13,10 @@ public class SectionTest {
 	
 	// assert
 	public static void ASSERT(Section actual, Section expected) {
-		// assertThat(actual.getId(), is(expected.getId()));
+		if (expected.getId() != 0) assertThat(actual.getId(), is(expected.getId()));
 		assertThat(actual.getSectionId(), is(expected.getSectionId()));
 		assertThat(actual.getSectionName(), is(expected.getSectionName()));
-		assertThat(actual.getSuperId(), is(expected.getSuperId()));
+		if (expected.getSuperId() != 0) assertThat(actual.getSuperId(), is(expected.getSuperId()));
 	}
 	
 	public static void ASSERTS(List<Section> actuals, List<Section> expecteds) {
@@ -42,6 +41,7 @@ public class SectionTest {
 		return section;
 	}
 	
+	// preparedList
 	public static List<Section> preparedList() {
 		
 		return Arrays.asList(new Section[] {
@@ -58,5 +58,24 @@ public class SectionTest {
 		
 		return sections;
 	}
-
+	
+	public static List<Section> preparedList1() {
+		
+		return Arrays.asList(new Section[] {SectionTest.create(0, "101", "경제", 0)});
+	}
+	
+	public static List<Section> preparedList2() {
+		
+		return Arrays.asList(new Section[] {
+				SectionTest.create(0, "267", "국방/외교", 0),
+				SectionTest.create(0, "421", "한국대표팀", 0)});
+	}
+	
+	public static List<Section> preparedList3() {
+		
+		return Arrays.asList(new Section[] {
+				SectionTest.create(0, "104", "세계", 0),
+				SectionTest.create(0, "289", "세계", 0),
+				SectionTest.create(0, "5ae", "TYN 뉴스", 0)});
+	}
 }

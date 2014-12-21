@@ -1,9 +1,11 @@
 package elixir.service;
 
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,7 +20,7 @@ import elixir.model.ArticleTest;
 import elixir.model.Office;
 import elixir.model.OfficeTest;
 import elixir.model.Section;
-import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArticleServiceTest {
@@ -36,30 +38,36 @@ public class ArticleServiceTest {
 	
 	
 	private List<Article> articles;
-	private List<Section> sections;
+	private List<List<Section>> secitonsList;
 	
+	@Before
+	public void setup() {
+		List<Office> offices = OfficeTest.preparedList(new String[]{"officeId", "officeName"});
+		secitonsList = SectionsTest.preparedList();
+		articles = ArticleTest.preparedList(offices, secitonsList,
+				new String[]{"office", "articleId", "title", "content",
+				"orgUrl", "contributionDate", "contributionTime", "imageUrl"});
+		
+	}
 	
 	@Test
 	public void addAll() {
-		// prepare
-		prepareForAddAll();
-		
+		// exec
 		articleService.addAll(articles);
 		
 		// mock verify
 		verify(articleDaoMock, times(1)).addAll(articles);
-		verify(sectionServiceMock, times(3)).addAll(sections);
+		verify(sectionServiceMock, times(3)).addAll(anyListOf(Section.class));
 	}
 	
-	
-	private void prepareForAddAll() {
-		List<Office> offices = OfficeTest.preparedList(new String[]{"officeId", "officeName"});
-		sections = SectionTest.preparedList(new String[]{"sectionId", "sectionName"});
-		articles = ArticleTest.preparedList(offices, sections,
-				new String[]{"office", "articleId", "title", "content",
-				"orgUrl", "contributionDate", "contributionTime", "imageUrl"});
+	@Test
+	public void updateContent() {
+		
+		
+		
+		
 	}
-	
+
 	
 //	@Test
 //	public void has() {
