@@ -1,198 +1,108 @@
 package elixir.model;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import elixir.utility.ElixirUtils;
-
 public class ArticleTest {
-	private static final String FACK_STR = "-----";
 	
 	private List<Article> articles;
 	
-	private Article article1;
-	private Article article2;
-	private Article article3;
-	
-	private Journal journal1;
-	private Journal journal2;
-	private Journal journal3;
-	
-	private Section section1;
-	private Section section2;
-	private Section section3;
-	
-	private Hotissue hotissue1;
-	private Hotissue hotissue2;
-	private Hotissue hotissue3;
-	
-	
 	@Before
 	public void setup() {
-		makeFixtures();
-	}
-
-	
-	@Test
-	public void hashcode() {
-		Article actual1 = new Article(
-				new Hotissue(hotissue1.getName()),
-				new Journal(journal1.getName()),
-				new Section(section1.getMinor()),
-				article1.getTitle(),
-				article1.getDate());
-		assertThat(actual1.hashCode(), is(article1.hashCode()));
+		List<List<Section>> sectionsList = new ArrayList<List<Section>>();
+		sectionsList.add(SectionsTest.preparedList1());
+		sectionsList.add(SectionsTest.preparedList2());
+		sectionsList.add(SectionsTest.preparedList2());
 		
-		Article actual2 = new Article(
-				new Hotissue(hotissue2.getName()),
-				new Journal(journal2.getName()),
-				new Section(section2.getMinor()),
-				article2.getTitle(),
-				article2.getDate());
-		assertThat(actual2.hashCode(), is(article2.hashCode()));
-		
-		Article actual3 = new Article(
-				new Hotissue(hotissue3.getName()), 
-				new Journal(journal3.getName()), 
-				new Section(section3.getMinor()), 
-				article3.getTitle(), 
-				article3.getDate());
-		assertThat(actual3.hashCode(), is(article3.hashCode()));
+		articles = ArticlesTest.preparedList(OfficesTest.preparedList(), sectionsList);
 	}
 	
 	@Test
-	public void notHashcode() {
-		Article actual1_1 = new Article(
-				new Hotissue(hotissue1.getName() + FACK_STR), 
-				new Journal(journal1.getName()), 
-				new Section(section1.getMinor()), 
-				article1.getTitle(), 
-				article1.getDate());
-		assertThat(actual1_1.hashCode(), not(is(article1.hashCode())));
-		
-		Article actual1_2 = new Article(
-				new Hotissue(hotissue1.getName()), 
-				new Journal(journal1.getName() + FACK_STR), 
-				new Section(section1.getMinor()), 
-				article1.getTitle(), 
-				article1.getDate());
-		assertThat(actual1_2.hashCode(), not(is(article1.hashCode())));
-		
-		Article actual1_3 = new Article(
-				new Hotissue(hotissue1.getName()), 
-				new Journal(journal1.getName()), 
-				new Section(section1.getMinor() + FACK_STR), 
-				article1.getTitle(), 
-				article1.getDate());
-		assertThat(actual1_3.hashCode(), not(is(article1.hashCode())));
-		
-		
-		Article actual2 = new Article(
-				new Hotissue(hotissue2.getName()), 
-				new Journal(journal2.getName()), 
-				new Section(section2.getMinor()), 
-				article2.getTitle() + FACK_STR, 
-				article2.getDate());
-		assertThat(actual2.hashCode(), not(is(article2.hashCode())));
-		
-		Article actual3 = new Article(
-				new Hotissue(hotissue3.getName()), 
-				new Journal(journal3.getName()), 
-				new Section(section3.getMinor()), 
-				article3.getTitle(), 
-				article3.getDate() + FACK_STR);
-		assertThat(actual3.hashCode(), not(is(article3.hashCode())));
+	public void sign() {
+		for (Article article : articles) {
+			Signature signature = article.sign();
+			SignatureTest.ASSERT(signature, article);
+		}
 	}
 	
-	
-	@Test
-	public void calcScore() {
+	@Test(expected=SignatureFailureException.class)
+	public void sign_failure() {
+		articles.get(0).setOffice(null);
 		
 		for (Article article : articles) {
-			
-			article.clacScore();
-			double actualScore = article.getScore();
-			double expectedScore = (double) article.getCompletedReadingCount() / article.getHits();
-			
-			assertThat(actualScore, is(expectedScore));
+			Signature signature = article.sign();
+			SignatureTest.ASSERT(signature, article);
 		}
 	}
 	
-	@Test
-	public void asList() {
-		List<Hotissue> hotissues = new ArrayList<Hotissue>();
-		hotissue1.addArticle(article1);
-		hotissue2.addArticle(article2);
-		hotissue3.addArticle(article3);
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue2);
-		hotissues.add(hotissue3);
+
+
+	public static void ASSERT(Article actual, Article expected, String[] fieldArr) {
+		List<String> fields = Arrays.asList(fieldArr);
 		
-		List<Article> actualArticles = Article.asList(hotissues);
+		if (fields.contains("id"))
+				assertThat(actual.getId(), is(expected.getId()));
 		
-		for (int i=0; i<3; i++) {
-			Article actual = actualArticles.get(i);
-			assertThat(actual, is(articles.get(i)));
-		}
+		if (fields.contains("articleId"))
+			assertThat(actual.getArticleId(), is(expected.getArticleId()));
 		
-	}
-	
-	@Test
-	public void asListWithSequenceIncludeTimestamp() {
-		List<Hotissue> hotissues = new ArrayList<Hotissue>();
-		hotissue1.addArticle(article1);
-		hotissue2.addArticle(article2);
-		hotissue3.addArticle(article3);
-		hotissues.add(hotissue1);
-		hotissues.add(hotissue2);
-		hotissues.add(hotissue3);
+		if (fields.contains("office") && expected.getOffice() != null)
+			OfficeTest.ASSERT(actual.getOffice(), expected.getOffice());
 		
-		String timestamp = ElixirUtils.getFormattedDate(2014, Calendar.DECEMBER, 7, 6);
+		if (fields.contains("id") && expected.getSections() != null)
+			SectionsTest.ASSERT(actual.getSections(), expected.getSections());
 		
-		List<Article> actualArticles = Article.asListWithSequenceIncludeTimestamp(hotissues, timestamp);
+		if (fields.contains("title"))
+			assertThat(actual.getTitle(), is(expected.getTitle()));
 		
-		for (int i=0; i<3; i++) {
-			Article actual = actualArticles.get(i);
-			Article expected = articles.get(i);
-			assertThat(actual.getId(), is(expected.getId()));
-			assertThat(actual.getSequence(), is(i+1));
-			assertThat(actual.getTimestamp(), is(timestamp));
-		}
-	}
-	
-	
-	private void makeFixtures() {
-		articles = new ArrayList<Article>();
+		if (fields.contains("content"))
+			assertThat(actual.getContent(), is(expected.getContent()));
 		
-		journal1 = new Journal(84, "인벤", "스포츠/연예");
-		section1 = new Section(3, "정치", "북한");
-		hotissue1 = new Hotissue(1, "hotissue1");
-		article1 = new Article(hotissue1, journal1, section1, "title1", "1111-01-01 01:11:11", "content1", 10000, 7000);
+		if (fields.contains("orgUrl"))
+			assertThat(actual.getOrgUrl(), is(expected.getOrgUrl()));
 		
+		if (fields.contains("contributionDate"))
+			assertThat(actual.getContributionDate(), is(expected.getContributionDate()));
 		
-		journal2 = new Journal(10, "한국일보", "종합");
-		section2 = new Section(10, "경제", "금융");
-		hotissue2 = new Hotissue(2, "hotissue2");
-		article2 = new Article(hotissue2, journal2, section2, "title2", "1222-02-02 02:11:11", "content2", 20000, 8000);
+		if (fields.contains("contributionTime"))
+			assertThat(actual.getContributionTime(), is(expected.getContributionTime()));
 		
+		if (fields.contains("imageUrl"))
+			assertThat(actual.getImageUrl(), is(expected.getImageUrl()));
 		
-		journal3 = new Journal(23, "전자신문", "IT");
-		section3 = new Section(23, "사회", "언론");
-		hotissue3 = new Hotissue(3, "hotissue3");
-		article3 = new Article(hotissue3, journal3, section3, "title3", "1333-03-03 03:11:11", "content3", 30000, 9000);
+		if (fields.contains("score"))
+			assertThat(actual.getScore(), is(expected.getScore()));
 		
-		articles.add(article1);
-		articles.add(article2);
-		articles.add(article3);
+		if (fields.contains("timestamp"))
+			assertThat(actual.getTimestamp(), is(expected.getTimestamp()));
 	}
 
+
+	// create
+	public static Article create(int id, String articleId, Office office, List<Section> sections, String content, String contributionDate, String contributionTime,
+			String title, String orgUrl, String imageUrl) {
+		Article article = new Article();
+		
+		article.setId(id);
+		article.setArticleId(articleId);
+		article.setOffice(office);
+		article.setSections(sections);
+		article.setContent(content);
+		article.setContributionDate(contributionDate);
+		article.setContributionTime(contributionTime);
+		article.setTitle(title);
+		article.setOrgUrl(orgUrl);
+		article.setImageUrl(imageUrl);
+		
+		return article;
+	}
+	
 
 }

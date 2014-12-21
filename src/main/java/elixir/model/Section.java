@@ -3,31 +3,28 @@ package elixir.model;
 public class Section {
 	
 	private int id;
-	private String major;
-	private String minor;
+	private String sectionId;
+	private String sectionName;
+	private int superId;
 	
-	public Section() {
-	}
-	
-	public Section(String minor) {
-		this(0, null, minor);
-	}
+	// empty
+	public Section() { }
 
+	// standard
+	public Section(String sectionId, String sectionName) {
+		this.sectionId = sectionId;
+		this.sectionName = sectionName;
+	}
+	
+	public Section(String sectionId) {
+		this(sectionId, null);
+	}
+	
 	public Section(int id) {
-		this(id, null, null);
-	}
-	
-	public Section(String major, String minor) {
-		this(0, major, minor);
-	}
-	
-	public Section (int id, String major, String minor) {
 		this.id = id;
-		this.major = major;
-		this.minor = minor;
 	}
 
-
+	// setter getter
 	public int getId() {
 		return id;
 	}
@@ -35,54 +32,36 @@ public class Section {
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public String getMajor() {
-		return major;
-	}
-
-	public void setMajor(String major) {
-		this.major = major;
-	}
-
-	public String getMinor() {
-		return minor;
-	}
-
-	public void setMinor(String minor) {
-		this.minor = minor;
-	}
 	
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((minor == null) ? 0 : minor.hashCode());
-		return result;
+	public String getSectionId() {
+		return sectionId;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Section other = (Section) obj;
-		if (minor == null) {
-			if (other.minor != null)
-				return false;
-		} else if (!minor.equals(other.minor))
-			return false;
-		return true;
+	public void setSectionId(String sectionId) {
+		this.sectionId = sectionId;
+	}
+
+	public String getSectionName() {
+		return sectionName;
+	}
+
+	public void setSectionName(String sectionName) {
+		this.sectionName = sectionName;
+	}
+
+	public int getSuperId() {
+		return superId;
+	}
+
+	public void setSuperId(int superId) {
+		this.superId = superId;
 	}
 
 	@Override
 	public String toString() {
-		return "Section [id=" + id + ", major=" + major + ", minor=" + minor + "]";
+		return "Section [id=" + id + ", sectionId=" + sectionId + ", sectionName=" + sectionName + ", superId=" + superId + "]";
 	}
 	
-
-
+	
+	
 }

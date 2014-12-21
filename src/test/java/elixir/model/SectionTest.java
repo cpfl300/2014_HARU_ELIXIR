@@ -1,58 +1,44 @@
 package elixir.model;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Arrays;
+import java.util.List;
 
 public class SectionTest {
-	private Section section1;
-	private Section section2;
-	private Section section3;
 	
-	@Before
-	public void setup() {
-		section1 = new Section(3, "정치", "북한");
-		section2 = new Section(10, "경제", "금융");
-		section3 = new Section(23, "사회", "언론");
-	}
-
-	@Test
-	public void hashcode() {
-		Section actual1 = new Section("북한");
-		assertThat(actual1.hashCode(), is(section1.hashCode()));
-		
-		Section actual2 = new Section("금융");
-		assertThat(actual2.hashCode(), is(section2.hashCode()));
-		
-		Section actual3 = new Section("언론");
-		assertThat(actual3.hashCode(), is(section3.hashCode()));
+	
+	// assert
+	public static void ASSERT(Section actual, Section expected) {
+		SectionTest.ASSERT(actual, expected, new String[]{"id", "sectionId", "sectionName", "superId"});
 	}
 	
-	@Test
-	public void hashcodeByMinor() {
-		Section actual1 = new Section(3, "정치", "북한");
-		assertThat(actual1.hashCode(), is(section1.hashCode()));
+	public static void ASSERT(Section actual, Section expected, String[] fieldArr) {
+		List<String> fields = Arrays.asList(fieldArr);
 		
-		Section actual2 = new Section(10, "경제", "금융");
-		assertThat(actual2.hashCode(), is(section2.hashCode()));
+		if (fields.contains("id") && expected.getId() != 0)
+			assertThat(actual.getId(), is(expected.getId()));
 		
-		Section actual3 = new Section("언론");
-		assertThat(actual3.hashCode(), is(section3.hashCode()));
+		if (fields.contains("sectionId"))
+			assertThat(actual.getSectionId(), is(expected.getSectionId()));
+		
+		if (fields.contains("sectionName"))
+			assertThat(actual.getSectionName(), is(expected.getSectionName()));
+		
+		if (fields.contains("superId") && expected.getSuperId() != 0)
+			assertThat(actual.getSuperId(), is(expected.getSuperId()));
 	}
 	
-	@Test
-	public void notHashcode() {
-		Section actual1 = new Section(3, "정치", "북한1");
-		assertThat(actual1.hashCode(), not(is(section1.hashCode())));
+	// create
+	public static Section create(int id, String sectionId, String sectionName, int superId) {
+		Section section = new Section();
 		
-		Section actual2 = new Section(10, "경제", "금융2");
-		assertThat(actual2.hashCode(), not(is(section2.hashCode())));
+		section.setId(id);
+		section.setSectionId(sectionId);
+		section.setSectionName(sectionName);
+		section.setSuperId(superId);
 		
-		Section actual3 = new Section(23, "사회", "언론3");
-		assertThat(actual3.hashCode(), not(is(section3.hashCode())));
+		return section;
 	}
-
 }

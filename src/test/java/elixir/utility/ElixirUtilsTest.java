@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,8 +16,6 @@ import org.junit.Test;
 
 public class ElixirUtilsTest {
 
-
-	
 	@Test
 	public void getFormattedDate() {
 		String actualDate1 = ElixirUtils.getFormattedDate(2014, Calendar.DECEMBER, 7, 6);
@@ -24,6 +23,36 @@ public class ElixirUtilsTest {
 		
 		assertThat(actualDate1, is("2014-12-07 06:00:00"));
 		assertThat(actualDate2, is("2014-12-07 18:00:00"));
+		
+	}
+	
+	@Test
+	public void parseAndFormat() {
+		String format1 = "yyMMdd";
+		String format2 = "yyyyMMdd";
+		String format3 = "yyyy-MM-dd";
+		String format4 = "yyyy.MM.dd HH:mm:ss";
+		
+		String formattedDate1 = "881207";
+		String formattedDate2 = "19881207";
+		String formattedDate3 = "1988-12-07";
+		String formattedDate4 = "1988.12.07 18:30:00";
+		
+		Date date1 = ElixirUtils.parse(format1, formattedDate1);
+		Date date2 = ElixirUtils.parse(format2, formattedDate2);
+		Date date3 = ElixirUtils.parse(format3, formattedDate3);
+		Date date4 = ElixirUtils.parse(format4, formattedDate4);
+		
+		assertThat(formattedDate1, is(ElixirUtils.format(format1, date1)));
+		assertThat(formattedDate2, is(ElixirUtils.format(format2, date2)));
+		assertThat(formattedDate3, is(ElixirUtils.format(format3, date3)));
+		assertThat(formattedDate4, is(ElixirUtils.format(format4, date4)));
+		
+	}
+	
+	@Test
+	public void format() {
+		
 		
 	}
 	
@@ -127,9 +156,9 @@ public class ElixirUtilsTest {
 		String[] actualDates2 = ElixirUtils.getServiceFormattedDatesByDate(date2);
 		
 		assertThat(actualDates1[0], is("2014-12-06 18:00:00"));
-		assertThat(actualDates1[1], is("2014-12-07 06:00:00"));
+		assertThat(actualDates1[1], is("2014-12-07 05:59:59"));
 		assertThat(actualDates2[0], is("2014-12-07 06:00:00"));
-		assertThat(actualDates2[1], is("2014-12-07 18:00:00"));
+		assertThat(actualDates2[1], is("2014-12-07 17:59:59"));
 	}
 	
 	@Test
@@ -138,9 +167,20 @@ public class ElixirUtilsTest {
 		String[] actualDates2 = ElixirUtils.getServiceDatesByTime(2014, Calendar.DECEMBER, 7, 18);
 		
 		assertThat(actualDates1[0], is("2014-12-06 18:00:00"));
-		assertThat(actualDates1[1], is("2014-12-07 06:00:00"));
+		assertThat(actualDates1[1], is("2014-12-07 05:59:59"));
 		assertThat(actualDates2[0], is("2014-12-07 06:00:00"));
-		assertThat(actualDates2[1], is("2014-12-07 18:00:00"));
+		assertThat(actualDates2[1], is("2014-12-07 17:59:59"));
+	}
+	
+	// create	
+	public static List<Date> preparedList() {
+		
+		return Arrays.asList(new Date[] {
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 1, 6),
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 2, 6),
+				ElixirUtils.getDate(2014, Calendar.JANUARY, 3, 6)
+		});
+		
 	}
 
 }
