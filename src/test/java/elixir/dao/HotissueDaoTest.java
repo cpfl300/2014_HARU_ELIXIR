@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import elixir.config.ElixirConfig;
 import elixir.model.Hotissue;
 import elixir.model.HotissueTest;
+import elixir.model.HotissuesTest;
 import elixir.model.Section;
 import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 import elixir.test.ElixirTestUtils;
 import elixir.utility.ElixirUtilsTest;
 
@@ -49,13 +51,13 @@ public class HotissueDaoTest {
 		lastId = hotissueDao.getLastId();
 		
 		dates = ElixirUtilsTest.preparedList();
-		sections = SectionTest.preparedList();
-		hotissues = HotissueTest.preparedList(dates, sections);
+		sections = SectionsTest.preparedList();
+		hotissues = HotissuesTest.preparedList(dates, sections);
 	}										
 	
 	@AfterTransaction
 	public void initAutoIncrement() {
-		 hotissueDao.initAutoIncrement(lastId+1);
+		hotissueDao.initAutoIncrement(lastId+1);
 	}
 	
 	// size
@@ -91,8 +93,8 @@ public class HotissueDaoTest {
 	@Test
 	public void findByHotissueId() {
 		// prepare
-		sections = SectionTest.preparedList(new String[]{"id"});
-		hotissues = HotissueTest.preparedList(dates, sections, new String[]{"id", "hotissueId", "title", "imageUrl", "section"});		
+		sections = SectionsTest.preparedList(new String[]{"id"});
+		hotissues = HotissuesTest.preparedList(dates, sections, new String[]{"id", "hotissueId", "title", "imageUrl", "section"});		
 		hotissueDao.addAll(hotissues);
 		
 		// find by hotissueId
@@ -103,6 +105,6 @@ public class HotissueDaoTest {
 		}
 		
 		// assert
-		HotissueTest.ASSERTS(actuals, hotissues);
+		HotissuesTest.ASSERTS(actuals, hotissues, new String[]{"hotissueId", "title", "imageUrl", "section"});
 	}	
 }

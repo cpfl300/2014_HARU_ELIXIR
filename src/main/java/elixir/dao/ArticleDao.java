@@ -1,24 +1,15 @@
 package elixir.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import elixir.model.Article;
-import elixir.model.Hotissue;
-import elixir.model.Journal;
-import elixir.model.Section;
 
 
 @Repository
@@ -27,7 +18,6 @@ public class ArticleDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-
 	public int size() {
 		
 		return this.jdbcTemplate.queryForInt("SELECT COUNT(*) FROM articles");

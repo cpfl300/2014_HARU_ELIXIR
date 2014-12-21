@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import elixir.dao.ArticleDao;
 import elixir.model.Article;
-import elixir.model.ArticleTest;
+import elixir.model.ArticlesTest;
 import elixir.model.Office;
-import elixir.model.OfficeTest;
+import elixir.model.OfficesTest;
 import elixir.model.Section;
 import elixir.model.SectionsTest;
 
@@ -42,9 +42,9 @@ public class ArticleServiceTest {
 	
 	@Before
 	public void setup() {
-		List<Office> offices = OfficeTest.preparedList(new String[]{"officeId", "officeName"});
-		secitonsList = SectionsTest.preparedList();
-		articles = ArticleTest.preparedList(offices, secitonsList,
+		List<Office> offices = OfficesTest.preparedList(new String[]{"officeId", "officeName"});
+		secitonsList = SectionsTest.preparedSectionsList();
+		articles = ArticlesTest.preparedList(offices, secitonsList,
 				new String[]{"office", "articleId", "title", "content",
 				"orgUrl", "contributionDate", "contributionTime", "imageUrl"});
 		

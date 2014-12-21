@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import elixir.dao.HotissueDao;
 import elixir.model.Hotissue;
-import elixir.model.HotissueTest;
+import elixir.model.HotissuesTest;
 import elixir.model.Section;
-import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 import elixir.utility.ElixirUtils;
 import elixir.utility.ElixirUtilsTest;
 
@@ -41,8 +41,8 @@ public class HotissueServiceTest {
 	@Before
 	public void setup() {
 		dates = ElixirUtilsTest.preparedList();
-		sections = SectionTest.preparedList();
-		hotissues = HotissueTest.preparedList(dates, sections);
+		sections = SectionsTest.preparedList();
+		hotissues = HotissuesTest.preparedList(dates, sections);
 	}
 	
 	@Test

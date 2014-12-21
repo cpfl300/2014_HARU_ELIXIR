@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import elixir.config.ElixirConfig;
 import elixir.model.Office;
-import elixir.model.OfficeTest;
+import elixir.model.OfficesTest;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +29,7 @@ public class OfficeDaoTest {
 	
 	@Before
 	public void setup() {
-		offices = OfficeTest.preparedList();
+		offices = OfficesTest.preparedList();
 	}
 	
 	// find by officeId
@@ -44,7 +44,7 @@ public class OfficeDaoTest {
 		}
 		
 		// assert
-		OfficeTest.ASSERTS(actuals, offices);		
+		OfficesTest.ASSERTS(actuals, offices);		
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)
@@ -71,7 +71,7 @@ public class OfficeDaoTest {
 		}
 		
 		// assert
-		OfficeTest.ASSERTS(actuals, offices);		
+		OfficesTest.ASSERTS(actuals, offices);		
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)

@@ -3,6 +3,7 @@ package elixir.model;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SignaturesTest {
@@ -15,5 +16,13 @@ public class SignaturesTest {
 			
 			SignatureTest.ASSERT(actual, expected);
 		}	
+	}
+
+	public static List<Signature> preparedList() {
+		
+		return Arrays.asList(new Signature[]{
+				SignatureTest.create("001", "0006718568"),
+				SignatureTest.create("003", "0005636597"),
+				SignatureTest.create("277", "0003177935")});
 	}
 }

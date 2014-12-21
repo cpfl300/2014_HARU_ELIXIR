@@ -10,8 +10,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import elixir.test.ElixirTestUtils;
-
 public class ArticleTest {
 	
 	private List<Article> articles;
@@ -19,11 +17,11 @@ public class ArticleTest {
 	@Before
 	public void setup() {
 		List<List<Section>> sectionsList = new ArrayList<List<Section>>();
-		sectionsList.add(SectionTest.preparedList1());
-		sectionsList.add(SectionTest.preparedList2());
-		sectionsList.add(SectionTest.preparedList2());
+		sectionsList.add(SectionsTest.preparedList1());
+		sectionsList.add(SectionsTest.preparedList2());
+		sectionsList.add(SectionsTest.preparedList2());
 		
-		articles = ArticleTest.preparedList(OfficeTest.preparedList(), sectionsList);
+		articles = ArticlesTest.preparedList(OfficesTest.preparedList(), sectionsList);
 	}
 	
 	@Test
@@ -104,23 +102,6 @@ public class ArticleTest {
 		article.setImageUrl(imageUrl);
 		
 		return article;
-	}
-
-	
-	public static List<Article> preparedList(List<Office> offices, List<List<Section>> sectionsList) {
-		
-		return Arrays.asList(new Article[] {
-				ArticleTest.create(1, "111", offices.get(0), sectionsList.get(0), "content1", "20140101", "010101", "title1", "orgUrl1", "imageUrl1"),
-				ArticleTest.create(2, "222", offices.get(1), sectionsList.get(1), "content2", "20140102", "010102", "title2", "orgUrl2", "imageUrl2"),
-				ArticleTest.create(3, "333", offices.get(2), sectionsList.get(2), "content3", "20140103", "010103", "title3", "orgUrl3", "imageUrl3")
-		});
-	}
-	
-	public static List<Article> preparedList(List<Office> offices, List<List<Section>> sectionsList, String[] fields) {
-		List<Article> articles = ArticleTest.preparedList(offices, sectionsList);
-		ElixirTestUtils.initComplementaryFields(articles, fields);
-		
-		return articles;
 	}
 	
 

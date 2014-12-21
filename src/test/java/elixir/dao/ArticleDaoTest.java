@@ -16,11 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import elixir.config.ElixirConfig;
 import elixir.model.Article;
-import elixir.model.ArticleTest;
+import elixir.model.ArticlesTest;
 import elixir.model.Office;
-import elixir.model.OfficeTest;
+import elixir.model.OfficesTest;
 import elixir.model.Section;
-import elixir.model.SectionTest;
 import elixir.model.SectionsTest;
 import elixir.test.ElixirTestUtils;
 
@@ -39,9 +38,9 @@ public class ArticleDaoTest {
 	
 	@Before
 	public void setup() {
-		offices = OfficeTest.preparedList();
-		sectionsList = SectionsTest.preparedList();
-		articles = ArticleTest.preparedList(offices, sectionsList);
+		offices = OfficesTest.preparedList();
+		sectionsList = SectionsTest.preparedSectionsList();
+		articles = ArticlesTest.preparedList(offices, sectionsList);
 		
 		for (Article article : articles) {
 			article.setContent(null);

@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import elixir.dao.SectionDao;
 import elixir.model.Section;
-import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,7 +30,7 @@ public class SectionServiceTest {
 	
 	@Before
 	public void setup() {
-		sections = SectionTest.preparedList();
+		sections = SectionsTest.preparedList();
 	}
 	
 

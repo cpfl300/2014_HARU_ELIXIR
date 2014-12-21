@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import elixir.config.ElixirConfig;
 import elixir.model.Section;
 import elixir.model.SectionTest;
+import elixir.model.SectionsTest;
 import elixir.test.ElixirTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,7 +35,7 @@ public class SectionDaoTest {
 	
 	@Before
 	public void setup() {
-		sections = SectionTest.preparedList();
+		sections = SectionsTest.preparedList();
 	}
 	
 	// size
@@ -100,7 +101,7 @@ public class SectionDaoTest {
 		}
 		
 		// assert
-		SectionTest.ASSERTS(actuals, sections);
+		SectionsTest.ASSERTS(actuals, sections);
 	}
 
 	@Test(expected=EmptyResultDataAccessException.class)
@@ -126,7 +127,7 @@ public class SectionDaoTest {
 		}
 		
 		// assert
-		SectionTest.ASSERTS(actuals, sections);
+		SectionsTest.ASSERTS(actuals, sections);
 	}
 
 	@Test(expected=EmptyResultDataAccessException.class)
@@ -153,7 +154,7 @@ public class SectionDaoTest {
 		}
 		
 		// assert
-		SectionTest.ASSERTS(actuals, sections);
+		SectionsTest.ASSERTS(actuals, sections);
 	}
 	
 	@Test(expected=EmptyResultDataAccessException.class)
