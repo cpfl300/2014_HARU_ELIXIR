@@ -14,9 +14,9 @@ public class StatusService {
 
 	public Status next() {
 		// TODO Auto-generated method stub
-		Status haruStatus = new Status("20141207", true);
+		Status status = new Status("20141207", true);
 		
-		return haruStatus;
+		return status;
 	}
 
 	public void add(Status haruStatus) {
@@ -24,5 +24,14 @@ public class StatusService {
 		statusDao.add(haruStatus);
 		
 	}
+
+	public Status getLastStatus() {
+		
+		Status status = statusDao.getLastStatus();
+		
+		return status;
+	}
+	
+	
 
 }

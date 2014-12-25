@@ -25,4 +25,9 @@ public class StatusDao {
 		return this.jdbcTemplate.queryForInt("SELECT COUNT(*) FROM status");
 	}
 
+	public Status getLastStatus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

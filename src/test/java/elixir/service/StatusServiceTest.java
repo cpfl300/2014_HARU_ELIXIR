@@ -2,8 +2,7 @@ package elixir.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import elixir.dao.StatusDao;
 import elixir.model.Status;
+import elixir.model.StatusTest;
 import elixir.utility.ElixirUtils;
 
 
@@ -29,7 +29,7 @@ public class StatusServiceTest {
 	@Mock
 	private StatusDao statusDao;
 	
-	private Status lastHaruStatus;
+	private Status lastStatus;
 	private Date afternoon;
 	private Date dateAtMorning;
 	
@@ -38,7 +38,7 @@ public class StatusServiceTest {
 	public void setup() {
 		afternoon = ElixirUtils.getDate(2014, Calendar.DECEMBER, 17, 13);
 		dateAtMorning = ElixirUtils.getDate(2014, Calendar.DECEMBER, 17, 11);
-//		lastHaruStatus = new HaruStatus("20141207", true);
+		lastStatus = new Status("20141207", true);
 		
 	}
 	@Test
@@ -49,6 +49,16 @@ public class StatusServiceTest {
 		
 		verify(statusDao, times(1)).add(status);
 		
+	}
+	
+	@Test
+	public void getLastStatus() {		
+		when(statusDao.getLastStatus()).thenReturn(lastStatus);
+		
+		Status actual = statusService.getLastStatus();
+		
+		verify(statusDao, times(1)).getLastStatus();
+		StatusTest.ASSERT(actual, lastStatus);
 	}
 	
 
