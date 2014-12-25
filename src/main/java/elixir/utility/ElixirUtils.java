@@ -35,7 +35,7 @@ public class ElixirUtils {
 		return DATE_FORMAT_IN_ARTILCE.format(getDate(year, month, day, hour));
 	}
 	
-	public static Date getNow() {
+	public static Date now() {
 		Calendar calendar = Calendar.getInstance(KOREA_ZONE);
 		
 		return new Date(calendar.getTimeInMillis());
