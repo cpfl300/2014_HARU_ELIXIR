@@ -69,7 +69,6 @@ public class ArticleServiceTest {
 		
 		verify(articleDaoMock, times(3)).updateContent(anyString(), anyString());
 		
-		
 	}
 
 	

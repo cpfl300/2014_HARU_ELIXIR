@@ -22,7 +22,7 @@ public class HotissueService {
 	private ArticleService articleService;
 	
 	public void addAll(List<Hotissue> hotissues) {
-		hotissueDao.addAll(hotissues);
+		//hotissueDao.addAll(hotissues);
 	}
 
 	

@@ -31,7 +31,6 @@ public class ArticleService {
 		articleDao.updateContent(article.getArticleId(), article.getContent());
 		
 	}
-
 	
 	
 //	@Transactional
