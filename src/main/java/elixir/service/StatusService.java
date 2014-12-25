@@ -27,7 +27,7 @@ public class StatusService {
 
 	public Status getLastStatus() {
 		
-		Status status = statusDao.getLastStatus();
+		Status status = statusDao.getLast();
 		
 		return status;
 	}

@@ -53,11 +53,11 @@ public class StatusServiceTest {
 	
 	@Test
 	public void getLastStatus() {		
-		when(statusDao.getLastStatus()).thenReturn(lastStatus);
+		when(statusDao.getLast()).thenReturn(lastStatus);
 		
 		Status actual = statusService.getLastStatus();
 		
-		verify(statusDao, times(1)).getLastStatus();
+		verify(statusDao, times(1)).getLast();
 		StatusTest.ASSERT(actual, lastStatus);
 	}
 	

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import elixir.config.ElixirConfig;
 import elixir.model.Status;
+import elixir.model.StatusTest;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,6 +36,24 @@ public class StatusDaoTest {
 	public void getCount() {
 		int initCount = statusDao.getCount();
 		assertThat(statusDao.getCount()-initCount, is(0));
+	}
+	
+	@Test
+	public void getLast() {
+		// given
+		Status first = new Status("20141206", true);
+		Status second = new Status("20141207", false);
+		Status third = new Status("20141207", true);
+		
+		statusDao.add(first);
+		statusDao.add(second);
+		statusDao.add(third);
+		
+		// when
+		Status actual = statusDao.getLast();
+		
+		// then
+		StatusTest.ASSERT(actual, third);
 	}
 
 	@Test
